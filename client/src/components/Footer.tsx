@@ -1,4 +1,4 @@
-import { Facebook, Twitter, Instagram, Youtube, MapPin, Phone, Mail } from "lucide-react";
+import { Facebook, Twitter, Instagram, Youtube, MapPin, Phone, Mail, ChefHat } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 const Footer = () => {
@@ -20,38 +20,37 @@ const Footer = () => {
     groupedPages[category].sort((a: any, b: any) => a.order - b.order);
   });
 
-  // Default footer links with dynamic content integration
+  // Footer links with dynamic content integration
   const footerLinks = {
     company: [
-      ...(groupedPages["Company"] ? groupedPages["Company"].map((page: any) => ({ name: page.title, href: `/page/${page.slug}` })) : []),
+      { name: "About Us", href: "/about" },
+      { name: "How It Works", href: "/how-it-works" },
       { name: "Careers", href: "#" },
-      { name: "Team", href: "#" },
-      { name: "FoodFind One", href: "#" },
-      { name: "FoodFind Instant", href: "#" },
-      { name: "FoodFind Genie", href: "#" }
+      { name: "Contact", href: "/contact" },
+      ...(groupedPages["Company"] ? groupedPages["Company"].map((page: any) => ({ name: page.title, href: `/page/${page.slug}` })) : []),
     ],
-    forFoodie: [
-      { name: "Code of Conduct", href: "#" },
-      { name: "Community", href: "#" },
-      { name: "Blogger Help", href: "#" },
-      { name: "Mobile Apps", href: "#" },
-      { name: "FoodFind Pro", href: "#" },
-      { name: "Live", href: "#" }
+    forCustomers: [
+      { name: "Download Customer App", href: "#" },
+      { name: "Food Safety", href: "#" },
+      { name: "Quality Assurance", href: "#" },
+      { name: "Order Tracking", href: "#" },
+      { name: "Payment Options", href: "#" },
+      ...(groupedPages["Customers"] ? groupedPages["Customers"].map((page: any) => ({ name: page.title, href: `/page/${page.slug}` })) : []),
     ],
-    forRestaurants: [
-      { name: "Partner With Us", href: "#" },
-      { name: "Apps For You", href: "#" },
-      { name: "Restaurant Widgets", href: "#" },
-      { name: "Products for Business", href: "#" },
-      { name: "Restaurant Marketing", href: "#" },
-      { name: "Advertise", href: "#" }
+    forCooks: [
+      { name: "Join as Cook", href: "/cook-registration" },
+      { name: "Cook Guidelines", href: "#" },
+      { name: "Kitchen Standards", href: "#" },
+      { name: "Cook Support", href: "#" },
+      { name: "Download Cook App", href: "#" },
+      ...(groupedPages["Cooks"] ? groupedPages["Cooks"].map((page: any) => ({ name: page.title, href: `/page/${page.slug}` })) : []),
     ],
-    forYou: [
+    legal: [
+      { name: "Privacy Policy", href: "#" },
+      { name: "Terms of Service", href: "#" },
+      { name: "Cookie Policy", href: "#" },
+      { name: "Refund Policy", href: "#" },
       ...(groupedPages["Legal"] ? groupedPages["Legal"].map((page: any) => ({ name: page.title, href: `/page/${page.slug}` })) : []),
-      { name: "Cookie Policy", href: "/cookies" },
-      { name: "Offer Terms", href: "/offers" },
-      { name: "Phishing & Fraud", href: "/security" },
-      { name: "Corporate Bug Bounty", href: "/security" }
     ]
   };
 
@@ -65,44 +64,33 @@ const Footer = () => {
   return (
     <footer className="bg-card border-t border-border">
       <div className="container mx-auto px-4 py-12">
-        {/* Language & Country Selector */}
-        <div className="flex flex-wrap items-center justify-center gap-4 mb-8 pb-8 border-b border-border">
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-muted-foreground">🇮🇳</span>
-            <span className="text-sm font-medium">India</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-muted-foreground">🌐</span>
-            <span className="text-sm font-medium">English</span>
-          </div>
-        </div>
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
           {/* Brand Section */}
           <div className="lg:col-span-1">
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">Z</span>
+                <ChefHat className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-primary">Zomato</span>
+              <span className="text-xl font-bold text-primary">HomemadeFood</span>
             </div>
             <p className="text-muted-foreground text-sm mb-6">
-              Discover the best food & drinks in your city. Fast delivery, great restaurants, and amazing experiences.
+              Connecting food lovers with authentic homemade meals from local home chefs. Fresh, healthy, and delicious food delivered to your doorstep.
             </p>
             
             {/* Contact Info */}
             <div className="space-y-2 text-sm">
               <div className="flex items-center space-x-2 text-muted-foreground">
                 <MapPin className="w-4 h-4" />
-                <span>Multiple locations across India</span>
+                <span>Pan India Service</span>
               </div>
               <div className="flex items-center space-x-2 text-muted-foreground">
                 <Phone className="w-4 h-4" />
-                <span>1800-123-4567</span>
+                <span>+91 98765 43210</span>
               </div>
               <div className="flex items-center space-x-2 text-muted-foreground">
                 <Mail className="w-4 h-4" />
-                <span>support@foodfind.com</span>
+                <span>info@homemadefood.com</span>
               </div>
             </div>
           </div>
@@ -122,9 +110,9 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="font-semibold text-foreground mb-4">FOR FOODIES</h3>
+            <h3 className="font-semibold text-foreground mb-4">FOR CUSTOMERS</h3>
             <ul className="space-y-2">
-              {footerLinks.forFoodie.map((link, index) => (
+              {footerLinks.forCustomers.map((link, index) => (
                 <li key={index}>
                   <a href={link.href} className="text-muted-foreground hover:text-primary text-sm transition-smooth">
                     {link.name}
@@ -135,9 +123,9 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="font-semibold text-foreground mb-4">FOR RESTAURANTS</h3>
+            <h3 className="font-semibold text-foreground mb-4">FOR COOKS</h3>
             <ul className="space-y-2">
-              {footerLinks.forRestaurants.map((link, index) => (
+              {footerLinks.forCooks.map((link, index) => (
                 <li key={index}>
                   <a href={link.href} className="text-muted-foreground hover:text-primary text-sm transition-smooth">
                     {link.name}
@@ -148,9 +136,9 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="font-semibold text-foreground mb-4">FOR YOU</h3>
+            <h3 className="font-semibold text-foreground mb-4">LEGAL</h3>
             <ul className="space-y-2">
-              {footerLinks.forYou.map((link, index) => (
+              {footerLinks.legal.map((link, index) => (
                 <li key={index}>
                   <a href={link.href} className="text-muted-foreground hover:text-primary text-sm transition-smooth">
                     {link.name}
@@ -187,12 +175,12 @@ const Footer = () => {
               <img 
                 src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" 
                 alt="Download on App Store"
-                className="h-10"
+                className="h-10 hover:scale-105 transition-transform cursor-pointer"
               />
               <img 
                 src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" 
                 alt="Get it on Google Play"
-                className="h-10"
+                className="h-10 hover:scale-105 transition-transform cursor-pointer"
               />
             </div>
           </div>
@@ -201,7 +189,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-border mt-8 pt-6 text-center">
           <p className="text-sm text-muted-foreground">
-            © 2024 FoodFind Ltd. All rights reserved. | Privacy Policy | Terms of Service
+            © 2024 HomemadeFood Ltd. All rights reserved.
           </p>
         </div>
       </div>
