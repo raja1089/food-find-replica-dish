@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Route, Switch } from "wouter";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import FooterPage from "./pages/FooterPage";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminCities from "./pages/admin/AdminCities";
@@ -35,6 +36,7 @@ const App = () => (
       <Sonner />
       <Switch>
         <Route path="/" component={Index} />
+        <Route path="/page/:slug" component={FooterPage} />
         <Route path="/admin/login" component={AdminLogin} />
         <Route path="/admin" component={AdminDashboard} />
         <Route path="/admin/cities" component={AdminCities} />

@@ -131,6 +131,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get specific footer page by slug
+  app.get('/api/footer-pages/:slug', async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const page = await storage.getFooterPageBySlug(slug);
+      
+      if (!page || !page.isPublished) {
+        return res.status(404).json({ error: "Page not found" });
+      }
+      
+      res.json(page);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch page" });
+    }
+  });
+
   // Admin API Routes (protected)
   // Cities management
   app.get('/api/admin/cities', requireAuth, async (req, res) => {

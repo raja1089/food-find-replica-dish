@@ -47,13 +47,13 @@ const Footer = () => {
       "Advertise"
     ],
     forYou: [
-      ...(groupedPages["Legal"] ? groupedPages["Legal"].map((page: any) => page.title) : []),
-      "Privacy Policy",
-      "Terms & Conditions",
-      "Cookie Policy",
-      "Offer Terms",
-      "Phishing & Fraud",
-      "Corporate Bug Bounty"
+      ...(groupedPages["Legal"] ? groupedPages["Legal"].map((page: any) => ({ name: page.title, href: `/page/${page.slug}` })) : []),
+      { name: "Privacy Policy", href: "/privacy" },
+      { name: "Terms & Conditions", href: "/terms" },
+      { name: "Cookie Policy", href: "/cookies" },
+      { name: "Offer Terms", href: "/offers" },
+      { name: "Phishing & Fraud", href: "/security" },
+      { name: "Corporate Bug Bounty", href: "/security" }
     ]
   };
 
@@ -154,9 +154,15 @@ const Footer = () => {
             <ul className="space-y-2">
               {footerLinks.forYou.map((link, index) => (
                 <li key={index}>
-                  <a href="#" className="text-muted-foreground hover:text-primary text-sm transition-smooth">
-                    {link}
-                  </a>
+                  {typeof link === 'string' ? (
+                    <a href="#" className="text-muted-foreground hover:text-primary text-sm transition-smooth">
+                      {link}
+                    </a>
+                  ) : (
+                    <a href={link.href} className="text-muted-foreground hover:text-primary text-sm transition-smooth">
+                      {link.name}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
