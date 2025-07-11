@@ -77,6 +77,43 @@ export const heroSection = pgTable("hero_section", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const cookRegistrations = pgTable("cook_registrations", {
+  id: serial("id").primaryKey(),
+  // Personal Information
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  email: text("email").notNull().unique(),
+  phone: text("phone").notNull(),
+  
+  // Kitchen Information
+  kitchenName: text("kitchen_name").notNull(),
+  kitchenType: text("kitchen_type").notNull(), // home_kitchen, restaurant, cloud_kitchen
+  cuisineTypes: text("cuisine_types").array().notNull(), // Array of cuisine types
+  
+  // Address Information
+  address: text("address").notNull(),
+  city: text("city").notNull(),
+  state: text("state").notNull(),
+  pincode: text("pincode").notNull(),
+  
+  // Business Information
+  fssaiLicense: text("fssai_license"),
+  gstNumber: text("gst_number"),
+  panNumber: text("pan_number"),
+  
+  // Additional Information
+  experience: text("experience").notNull(), // years of experience
+  specialties: text("specialties").array(), // special dishes
+  description: text("description"),
+  
+  // Status
+  status: text("status").notNull().default("pending"), // pending, approved, rejected
+  
+  // Timestamps
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const citiesRelations = relations(cities, ({ many }) => ({
   restaurants: many(restaurants),
@@ -144,6 +181,26 @@ export const insertHeroSectionSchema = createInsertSchema(heroSection).pick({
   ctaLink: true,
 });
 
+export const insertCookRegistrationSchema = createInsertSchema(cookRegistrations).pick({
+  firstName: true,
+  lastName: true,
+  email: true,
+  phone: true,
+  kitchenName: true,
+  kitchenType: true,
+  cuisineTypes: true,
+  address: true,
+  city: true,
+  state: true,
+  pincode: true,
+  fssaiLicense: true,
+  gstNumber: true,
+  panNumber: true,
+  experience: true,
+  specialties: true,
+  description: true,
+});
+
 // Types
 export type InsertAdmin = z.infer<typeof insertAdminSchema>;
 export type Admin = typeof admins.$inferSelect;
@@ -159,3 +216,5 @@ export type InsertFooterPage = z.infer<typeof insertFooterPageSchema>;
 export type FooterPage = typeof footerPages.$inferSelect;
 export type InsertHeroSection = z.infer<typeof insertHeroSectionSchema>;
 export type HeroSection = typeof heroSection.$inferSelect;
+export type InsertCookRegistration = z.infer<typeof insertCookRegistrationSchema>;
+export type CookRegistration = typeof cookRegistrations.$inferSelect;

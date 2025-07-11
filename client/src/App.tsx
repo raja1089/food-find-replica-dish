@@ -14,6 +14,8 @@ import AdminFeatures from "./pages/admin/AdminFeatures";
 import AdminStats from "./pages/admin/AdminStats";
 import AdminHero from "./pages/admin/AdminHero";
 import AdminFooterPages from "./pages/admin/AdminFooterPages";
+import AdminCookRegistrations from "./pages/admin/AdminCookRegistrations";
+import CookRegistration from "./pages/CookRegistration";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,6 +47,8 @@ const App = () => (
         <Route path="/admin/stats" component={AdminStats} />
         <Route path="/admin/hero" component={AdminHero} />
         <Route path="/admin/footer-pages" component={AdminFooterPages} />
+        <Route path="/admin/cook-registrations" component={AdminCookRegistrations} />
+        <Route path="/cook-registration" component={CookRegistration} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route component={NotFound} />
       </Switch>

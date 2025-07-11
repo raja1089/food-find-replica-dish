@@ -1,6 +1,7 @@
-import { MapPin, Search, User, ShoppingCart } from "lucide-react";
+import { MapPin, Search, User, ShoppingCart, ChefHat } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Link } from "wouter";
 
 const Header = () => {
   return (
@@ -38,6 +39,12 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center space-x-3">
+            <Link href="/cook-registration">
+              <Button variant="ghost" size="sm" className="hidden sm:flex items-center space-x-1 text-red-600 hover:text-red-700 hover:bg-red-50">
+                <ChefHat className="w-4 h-4" />
+                <span>Partner with us</span>
+              </Button>
+            </Link>
             <Button variant="ghost" size="sm" className="hidden sm:flex items-center space-x-1">
               <User className="w-4 h-4" />
               <span>Login</span>

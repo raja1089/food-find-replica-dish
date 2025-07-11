@@ -8,7 +8,8 @@ import {
   insertFeatureSchema,
   insertStatsSchema,
   insertFooterPageSchema,
-  insertHeroSectionSchema
+  insertHeroSectionSchema,
+  insertCookRegistrationSchema
 } from "@shared/schema";
 import bcrypt from "bcrypt";
 import session from "express-session";
@@ -340,6 +341,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(hero);
     } catch (error) {
       res.status(400).json({ error: "Invalid hero section data" });
+    }
+  });
+
+  // Cook registration routes (public)
+  app.post('/api/cook-registration', async (req, res) => {
+    try {
+      const registrationData = insertCookRegistrationSchema.parse(req.body);
+      const registration = await storage.createCookRegistration(registrationData);
+      res.json({ message: "Registration submitted successfully", registration });
+    } catch (error) {
+      res.status(400).json({ error: "Invalid registration data" });
+    }
+  });
+
+  // Cook registration admin routes
+  app.get('/api/admin/cook-registrations', requireAuth, async (req, res) => {
+    try {
+      const registrations = await storage.getAllCookRegistrations();
+      res.json(registrations);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch cook registrations" });
+    }
+  });
+
+  app.get('/api/admin/cook-registrations/:id', requireAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const registration = await storage.getCookRegistrationById(id);
+      if (!registration) {
+        return res.status(404).json({ error: "Registration not found" });
+      }
+      res.json(registration);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch registration" });
+    }
+  });
+
+  app.put('/api/admin/cook-registrations/:id/status', requireAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { status } = req.body;
+      
+      if (!['pending', 'approved', 'rejected'].includes(status)) {
+        return res.status(400).json({ error: "Invalid status" });
+      }
+      
+      const registration = await storage.updateCookRegistrationStatus(id, status);
+      res.json(registration);
+    } catch (error) {
+      res.status(400).json({ error: "Failed to update registration status" });
     }
   });
 

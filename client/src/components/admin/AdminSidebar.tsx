@@ -12,7 +12,8 @@ import {
   Menu,
   X,
   Home,
-  Shield
+  Shield,
+  ChefHat
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -67,6 +68,12 @@ const AdminSidebar = ({ onLogout }: AdminSidebarProps) => {
       href: "/admin/hero",
       icon: Image,
       current: location === "/admin/hero"
+    },
+    {
+      name: "Cook Registrations",
+      href: "/admin/cook-registrations",
+      icon: ChefHat,
+      current: location === "/admin/cook-registrations"
     },
     {
       name: "Settings",

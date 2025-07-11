@@ -6,6 +6,7 @@ import {
   stats,
   footerPages,
   heroSection,
+  cookRegistrations,
   type Admin, 
   type InsertAdmin,
   type City,
@@ -19,7 +20,9 @@ import {
   type FooterPage,
   type InsertFooterPage,
   type HeroSection,
-  type InsertHeroSection
+  type InsertHeroSection,
+  type CookRegistration,
+  type InsertCookRegistration
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -68,6 +71,12 @@ export interface IStorage {
   // Hero section operations
   getHeroSection(): Promise<HeroSection | undefined>;
   updateHeroSection(hero: InsertHeroSection): Promise<HeroSection>;
+  
+  // Cook registration operations
+  createCookRegistration(registration: InsertCookRegistration): Promise<CookRegistration>;
+  getAllCookRegistrations(): Promise<CookRegistration[]>;
+  getCookRegistrationById(id: number): Promise<CookRegistration | undefined>;
+  updateCookRegistrationStatus(id: number, status: string): Promise<CookRegistration>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -238,6 +247,33 @@ export class DatabaseStorage implements IStorage {
       const [newHero] = await db.insert(heroSection).values(hero).returning();
       return newHero;
     }
+  }
+
+  // Cook registration operations
+  async createCookRegistration(registration: InsertCookRegistration): Promise<CookRegistration> {
+    const [newRegistration] = await db
+      .insert(cookRegistrations)
+      .values(registration)
+      .returning();
+    return newRegistration;
+  }
+
+  async getAllCookRegistrations(): Promise<CookRegistration[]> {
+    return await db.select().from(cookRegistrations).orderBy(cookRegistrations.createdAt);
+  }
+
+  async getCookRegistrationById(id: number): Promise<CookRegistration | undefined> {
+    const [registration] = await db.select().from(cookRegistrations).where(eq(cookRegistrations.id, id));
+    return registration;
+  }
+
+  async updateCookRegistrationStatus(id: number, status: string): Promise<CookRegistration> {
+    const [updatedRegistration] = await db
+      .update(cookRegistrations)
+      .set({ status, updatedAt: new Date() })
+      .where(eq(cookRegistrations.id, id))
+      .returning();
+    return updatedRegistration;
   }
 }
 
