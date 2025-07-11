@@ -6,7 +6,9 @@ import {
   insertCitySchema, 
   insertRestaurantSchema, 
   insertFeatureSchema,
-  insertStatsSchema 
+  insertStatsSchema,
+  insertFooterPageSchema,
+  insertHeroSectionSchema
 } from "@shared/schema";
 import bcrypt from "bcrypt";
 import session from "express-session";
@@ -62,7 +64,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  app.get('/api/admin/me', requireAuth, async (req, res) => {
+  app.get('/api/admin/verify', requireAuth, async (req, res) => {
     try {
       const admin = await storage.getAdminByUsername('admin'); // You'll need to get by ID
       res.json({ admin: { id: admin?.id, username: admin?.username } });
@@ -249,6 +251,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(stats);
     } catch (error) {
       res.status(400).json({ error: "Invalid stats data" });
+    }
+  });
+
+  // Footer pages management
+  app.get('/api/admin/footer-pages', requireAuth, async (req, res) => {
+    try {
+      const pages = await storage.getAllFooterPages();
+      res.json(pages);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch footer pages" });
+    }
+  });
+
+  app.post('/api/admin/footer-pages', requireAuth, async (req, res) => {
+    try {
+      const pageData = insertFooterPageSchema.parse(req.body);
+      const page = await storage.createFooterPage(pageData);
+      res.json(page);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid footer page data" });
+    }
+  });
+
+  app.put('/api/admin/footer-pages/:id', requireAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const pageData = insertFooterPageSchema.partial().parse(req.body);
+      const page = await storage.updateFooterPage(id, pageData);
+      res.json(page);
+    } catch (error) {
+      res.status(400).json({ error: "Failed to update footer page" });
+    }
+  });
+
+  app.delete('/api/admin/footer-pages/:id', requireAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteFooterPage(id);
+      res.json({ message: "Footer page deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete footer page" });
+    }
+  });
+
+  // Hero section management
+  app.get('/api/admin/hero', requireAuth, async (req, res) => {
+    try {
+      const hero = await storage.getHeroSection();
+      res.json(hero);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch hero section" });
+    }
+  });
+
+  app.put('/api/admin/hero', requireAuth, async (req, res) => {
+    try {
+      const heroData = insertHeroSectionSchema.parse(req.body);
+      const hero = await storage.updateHeroSection(heroData);
+      res.json(hero);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid hero section data" });
     }
   });
 

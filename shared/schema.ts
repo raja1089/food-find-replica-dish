@@ -55,6 +55,28 @@ export const stats = pgTable("stats", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const footerPages = pgTable("footer_pages", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
+  content: text("content").notNull(),
+  category: text("category").notNull(),
+  isPublished: boolean("is_published").default(true),
+  order: integer("order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const heroSection = pgTable("hero_section", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  subtitle: text("subtitle").notNull(),
+  backgroundImage: text("background_image").notNull(),
+  ctaText: text("cta_text").notNull(),
+  ctaLink: text("cta_link").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const citiesRelations = relations(cities, ({ many }) => ({
   restaurants: many(restaurants),
@@ -105,6 +127,23 @@ export const insertStatsSchema = createInsertSchema(stats).pick({
   orders: true,
 });
 
+export const insertFooterPageSchema = createInsertSchema(footerPages).pick({
+  title: true,
+  slug: true,
+  content: true,
+  category: true,
+  isPublished: true,
+  order: true,
+});
+
+export const insertHeroSectionSchema = createInsertSchema(heroSection).pick({
+  title: true,
+  subtitle: true,
+  backgroundImage: true,
+  ctaText: true,
+  ctaLink: true,
+});
+
 // Types
 export type InsertAdmin = z.infer<typeof insertAdminSchema>;
 export type Admin = typeof admins.$inferSelect;
@@ -116,3 +155,7 @@ export type InsertFeature = z.infer<typeof insertFeatureSchema>;
 export type Feature = typeof features.$inferSelect;
 export type InsertStats = z.infer<typeof insertStatsSchema>;
 export type Stats = typeof stats.$inferSelect;
+export type InsertFooterPage = z.infer<typeof insertFooterPageSchema>;
+export type FooterPage = typeof footerPages.$inferSelect;
+export type InsertHeroSection = z.infer<typeof insertHeroSectionSchema>;
+export type HeroSection = typeof heroSection.$inferSelect;

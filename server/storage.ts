@@ -4,6 +4,8 @@ import {
   restaurants, 
   features, 
   stats,
+  footerPages,
+  heroSection,
   type Admin, 
   type InsertAdmin,
   type City,
@@ -13,7 +15,11 @@ import {
   type Feature,
   type InsertFeature,
   type Stats,
-  type InsertStats
+  type InsertStats,
+  type FooterPage,
+  type InsertFooterPage,
+  type HeroSection,
+  type InsertHeroSection
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -50,6 +56,18 @@ export interface IStorage {
   // Stats operations
   getStats(): Promise<Stats | undefined>;
   updateStats(stats: InsertStats): Promise<Stats>;
+  
+  // Footer page operations
+  getAllFooterPages(): Promise<FooterPage[]>;
+  getFooterPageById(id: number): Promise<FooterPage | undefined>;
+  getFooterPageBySlug(slug: string): Promise<FooterPage | undefined>;
+  createFooterPage(page: InsertFooterPage): Promise<FooterPage>;
+  updateFooterPage(id: number, page: Partial<InsertFooterPage>): Promise<FooterPage>;
+  deleteFooterPage(id: number): Promise<void>;
+  
+  // Hero section operations
+  getHeroSection(): Promise<HeroSection | undefined>;
+  updateHeroSection(hero: InsertHeroSection): Promise<HeroSection>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -166,6 +184,59 @@ export class DatabaseStorage implements IStorage {
     } else {
       const [newStats] = await db.insert(stats).values(statsData).returning();
       return newStats;
+    }
+  }
+
+  // Footer page operations
+  async getAllFooterPages(): Promise<FooterPage[]> {
+    return await db.select().from(footerPages).orderBy(footerPages.category, footerPages.order);
+  }
+
+  async getFooterPageById(id: number): Promise<FooterPage | undefined> {
+    const [page] = await db.select().from(footerPages).where(eq(footerPages.id, id));
+    return page;
+  }
+
+  async getFooterPageBySlug(slug: string): Promise<FooterPage | undefined> {
+    const [page] = await db.select().from(footerPages).where(eq(footerPages.slug, slug));
+    return page;
+  }
+
+  async createFooterPage(page: InsertFooterPage): Promise<FooterPage> {
+    const [newPage] = await db.insert(footerPages).values(page).returning();
+    return newPage;
+  }
+
+  async updateFooterPage(id: number, page: Partial<InsertFooterPage>): Promise<FooterPage> {
+    const [updatedPage] = await db.update(footerPages)
+      .set({ ...page, updatedAt: new Date() })
+      .where(eq(footerPages.id, id))
+      .returning();
+    return updatedPage;
+  }
+
+  async deleteFooterPage(id: number): Promise<void> {
+    await db.delete(footerPages).where(eq(footerPages.id, id));
+  }
+
+  // Hero section operations
+  async getHeroSection(): Promise<HeroSection | undefined> {
+    const [hero] = await db.select().from(heroSection).limit(1);
+    return hero;
+  }
+
+  async updateHeroSection(hero: InsertHeroSection): Promise<HeroSection> {
+    const existingHero = await this.getHeroSection();
+    
+    if (existingHero) {
+      const [updatedHero] = await db.update(heroSection)
+        .set({ ...hero, updatedAt: new Date() })
+        .where(eq(heroSection.id, existingHero.id))
+        .returning();
+      return updatedHero;
+    } else {
+      const [newHero] = await db.insert(heroSection).values(hero).returning();
+      return newHero;
     }
   }
 }
