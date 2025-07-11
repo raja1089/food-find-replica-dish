@@ -126,6 +126,10 @@ The application follows modern web development practices with a focus on type sa
 - **Terminology Update**: Replaced "Restaurants" with "Kitchens" throughout the application for consistency
 - **Three-Step Registration**: Added Phone → OTP → Registration Form workflow with demo OTP (123456)
 - **Admin Management**: Added kitchen registration management in admin panel with status updates
+- **MySQL Integration**: Added MySQL database integration for kitchen registration data storage
+- **Dual Database Setup**: PostgreSQL for main app data, MySQL for kitchen registration data
+- **Kitchen Registration API**: Modified cook registration endpoints to store data in MySQL database
+- **Database Structure**: Created MySQL table structure for comprehensive kitchen registration data
 
 ## Admin Access
 - **URL**: `/admin/login`

@@ -11,6 +11,7 @@ import {
   insertHeroSectionSchema,
   insertCookRegistrationSchema
 } from "@shared/schema";
+import { mysqlCookStorage } from "./mysql-db";
 import bcrypt from "bcrypt";
 import session from "express-session";
 
@@ -344,23 +345,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Cook registration routes (public)
+  // Cook registration routes (public) - Using MySQL
   app.post('/api/cook-registration', async (req, res) => {
     try {
       const registrationData = insertCookRegistrationSchema.parse(req.body);
-      const registration = await storage.createCookRegistration(registrationData);
+      
+      // Convert arrays to JSON strings for MySQL storage
+      const mysqlData = {
+        firstName: registrationData.firstName,
+        lastName: registrationData.lastName,
+        email: registrationData.email,
+        phone: registrationData.phone,
+        kitchenName: registrationData.kitchenName,
+        kitchenType: registrationData.kitchenType,
+        cuisineTypes: JSON.stringify(registrationData.cuisineTypes),
+        address: registrationData.address,
+        city: registrationData.city,
+        state: registrationData.state,
+        pincode: registrationData.pincode,
+        fssaiLicense: registrationData.fssaiLicense,
+        gstNumber: registrationData.gstNumber,
+        panNumber: registrationData.panNumber,
+        experience: registrationData.experience,
+        specialties: registrationData.specialties ? JSON.stringify(registrationData.specialties) : null,
+        description: registrationData.description,
+        status: 'pending'
+      };
+      
+      const registration = await mysqlCookStorage.createCookRegistration(mysqlData);
       res.json({ message: "Registration submitted successfully", registration });
     } catch (error) {
+      console.error('Cook registration error:', error);
       res.status(400).json({ error: "Invalid registration data" });
     }
   });
 
-  // Cook registration admin routes
+  // Cook registration admin routes - Using MySQL
   app.get('/api/admin/cook-registrations', requireAuth, async (req, res) => {
     try {
-      const registrations = await storage.getAllCookRegistrations();
-      res.json(registrations);
+      const registrations = await mysqlCookStorage.getAllCookRegistrations();
+      
+      // Convert JSON strings back to arrays for frontend
+      const formattedRegistrations = registrations.map(reg => ({
+        ...reg,
+        cuisineTypes: typeof reg.cuisineTypes === 'string' ? JSON.parse(reg.cuisineTypes) : reg.cuisineTypes,
+        specialties: reg.specialties && typeof reg.specialties === 'string' ? JSON.parse(reg.specialties) : reg.specialties
+      }));
+      
+      res.json(formattedRegistrations);
     } catch (error) {
+      console.error('Error fetching cook registrations:', error);
       res.status(500).json({ error: "Failed to fetch cook registrations" });
     }
   });
@@ -368,12 +402,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/admin/cook-registrations/:id', requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const registration = await storage.getCookRegistrationById(id);
+      const registration = await mysqlCookStorage.getCookRegistrationById(id);
       if (!registration) {
         return res.status(404).json({ error: "Registration not found" });
       }
-      res.json(registration);
+      
+      // Convert JSON strings back to arrays for frontend
+      const formattedRegistration = {
+        ...registration,
+        cuisineTypes: typeof registration.cuisineTypes === 'string' ? JSON.parse(registration.cuisineTypes) : registration.cuisineTypes,
+        specialties: registration.specialties && typeof registration.specialties === 'string' ? JSON.parse(registration.specialties) : registration.specialties
+      };
+      
+      res.json(formattedRegistration);
     } catch (error) {
+      console.error('Error fetching cook registration:', error);
       res.status(500).json({ error: "Failed to fetch registration" });
     }
   });
@@ -387,9 +430,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Invalid status" });
       }
       
-      const registration = await storage.updateCookRegistrationStatus(id, status);
-      res.json(registration);
+      const registration = await mysqlCookStorage.updateCookRegistrationStatus(id, status);
+      if (!registration) {
+        return res.status(404).json({ error: "Registration not found" });
+      }
+      
+      // Convert JSON strings back to arrays for frontend
+      const formattedRegistration = {
+        ...registration,
+        cuisineTypes: typeof registration.cuisineTypes === 'string' ? JSON.parse(registration.cuisineTypes) : registration.cuisineTypes,
+        specialties: registration.specialties && typeof registration.specialties === 'string' ? JSON.parse(registration.specialties) : registration.specialties
+      };
+      
+      res.json(formattedRegistration);
     } catch (error) {
+      console.error('Error updating cook registration status:', error);
       res.status(400).json({ error: "Failed to update registration status" });
     }
   });
