@@ -2,10 +2,10 @@ import mysql from 'mysql2/promise';
 
 // MySQL connection pool for kitchen registration data
 const pool = mysql.createPool({
-  host: '156.67.74.205',
-  user: 'u734142251_homemadefoods',
-  password: 'u734142251_homemadefoodsS@',
-  database: 'u734142251_homemadefoods',
+  host: process.env.DB_HOST || '156.67.74.205',
+  user: process.env.DB_USER || 'u734142251_homemadefoods',
+  password: process.env.DB_PASSWORD || 'u734142251_homemadefoodsS@',
+  database: process.env.DB_NAME || 'u734142251_homemadefoods',
   waitForConnections: true,
   connectionLimit: 10,
   port: 3306,
@@ -21,7 +21,7 @@ export interface MySQLCookRegistration {
   phone: string;
   kitchenName: string;
   kitchenType: string;
-  cuisineTypes: string; // JSON string
+  cuisineTypes: string[]; // Array of cuisine types
   address: string;
   city: string;
   state: string;
@@ -30,49 +30,84 @@ export interface MySQLCookRegistration {
   gstNumber?: string;
   panNumber?: string;
   experience: string;
-  specialties?: string; // JSON string
+  specialties?: string[];
   description?: string;
   status: string;
+  latitude?: string;
+  longitude?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-// MySQL operations for cook registrations
+// MySQL operations for cook registrations using your existing database structure
 export class MySQLCookStorage {
   async createCookRegistration(registration: MySQLCookRegistration): Promise<MySQLCookRegistration> {
     const connection = await pool.getConnection();
     try {
-      const [result] = await connection.execute(
-        `INSERT INTO cooks (
-          first_name, last_name, email, phone, kitchen_name, kitchen_type, 
-          cuisine_types, address, city, state, pincode, fssai_license, 
-          gst_number, pan_number, experience, specialties, description, status,
-          created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+      await connection.beginTransaction();
+
+      // Check if user already exists
+      const [existingUser] = await connection.query(
+        'SELECT id FROM users WHERE mobile_number = ? OR email = ?',
+        [registration.phone, registration.email]
+      ) as any[];
+
+      let userId;
+      if (existingUser.length > 0) {
+        userId = existingUser[0].id;
+      } else {
+        // Insert new user
+        const [userResult] = await connection.query(
+          `INSERT INTO users (first_name, last_name, email, mobile_number, user_type, role_id, status, is_verified, latitude, longitude, created_at)
+           VALUES (?, ?, ?, ?, 'cook', 2, 1, 1, ?, ?, NOW())`,
+          [
+            registration.firstName,
+            registration.lastName,
+            registration.email,
+            registration.phone,
+            registration.latitude || null,
+            registration.longitude || null
+          ]
+        ) as any[];
+        userId = userResult.insertId;
+      }
+
+      // Insert into cooks table
+      await connection.query(
+        `INSERT INTO cooks 
+         (user_id, name, address, experience_years, cuisine_id, availability, created_at, updated_at, landmark, instagram, twitter, facebook, profile_image_url, latitude, longitude)
+         VALUES (?, ?, ?, ?, ?, 1, NOW(), NOW(), '', '', '', '', '', ?, ?)`,
         [
-          registration.firstName,
-          registration.lastName,
-          registration.email,
-          registration.phone,
+          userId,
           registration.kitchenName,
-          registration.kitchenType,
-          registration.cuisineTypes,
-          registration.address,
-          registration.city,
-          registration.state,
-          registration.pincode,
-          registration.fssaiLicense || null,
-          registration.gstNumber || null,
-          registration.panNumber || null,
-          registration.experience,
-          registration.specialties || null,
-          registration.description || null,
-          registration.status
+          `${registration.address}, ${registration.city}, ${registration.state} - ${registration.pincode}`,
+          parseInt(registration.experience) || 0,
+          null, // cuisine_id can be null for now
+          registration.latitude || null,
+          registration.longitude || null
         ]
       );
 
-      const insertId = (result as any).insertId;
-      return { ...registration, id: insertId };
+      // Insert business documents if provided
+      if (registration.fssaiLicense || registration.gstNumber || registration.panNumber) {
+        await connection.query(
+          `INSERT INTO cook_documents (cook_id, fssai_number, gst_number, pan_number, created_at)
+           VALUES (?, ?, ?, ?, NOW())`,
+          [
+            userId,
+            registration.fssaiLicense || '',
+            registration.gstNumber || '',
+            registration.panNumber || ''
+          ]
+        );
+      }
+
+      await connection.commit();
+      
+      return { ...registration, id: userId };
+    } catch (error) {
+      await connection.rollback();
+      throw error;
     } finally {
       connection.release();
     }
@@ -83,15 +118,26 @@ export class MySQLCookStorage {
     try {
       const [rows] = await connection.execute(
         `SELECT 
-          id, first_name as firstName, last_name as lastName, email, phone, 
-          kitchen_name as kitchenName, kitchen_type as kitchenType, 
-          cuisine_types as cuisineTypes, address, city, state, pincode, 
-          fssai_license as fssaiLicense, gst_number as gstNumber, 
-          pan_number as panNumber, experience, specialties, description, 
-          status, created_at as createdAt, updated_at as updatedAt
-        FROM cooks ORDER BY created_at DESC`
+          u.id, u.first_name as firstName, u.last_name as lastName, u.email, 
+          u.mobile_number as phone, c.name as kitchenName, 'home_kitchen' as kitchenType,
+          c.address, u.latitude, u.longitude, c.experience_years as experience,
+          '' as description, 'approved' as status, c.created_at as createdAt, c.updated_at as updatedAt
+        FROM users u 
+        LEFT JOIN cooks c ON u.id = c.user_id 
+        WHERE u.user_type = 'cook' 
+        ORDER BY c.created_at DESC`
       );
-      return rows as MySQLCookRegistration[];
+      
+      const registrations = (rows as any[]).map(row => ({
+        ...row,
+        cuisineTypes: ['Indian'], // Default cuisine type
+        specialties: [],
+        city: row.address ? row.address.split(',')[1]?.trim() || '' : '',
+        state: row.address ? row.address.split(',')[2]?.split('-')[0]?.trim() || '' : '',
+        pincode: row.address ? row.address.split('-').pop()?.trim() || '' : ''
+      }));
+      
+      return registrations;
     } finally {
       connection.release();
     }
@@ -102,17 +148,28 @@ export class MySQLCookStorage {
     try {
       const [rows] = await connection.execute(
         `SELECT 
-          id, first_name as firstName, last_name as lastName, email, phone, 
-          kitchen_name as kitchenName, kitchen_type as kitchenType, 
-          cuisine_types as cuisineTypes, address, city, state, pincode, 
-          fssai_license as fssaiLicense, gst_number as gstNumber, 
-          pan_number as panNumber, experience, specialties, description, 
-          status, created_at as createdAt, updated_at as updatedAt
-        FROM cooks WHERE id = ?`,
+          u.id, u.first_name as firstName, u.last_name as lastName, u.email, 
+          u.mobile_number as phone, c.name as kitchenName, 'home_kitchen' as kitchenType,
+          c.address, u.latitude, u.longitude, c.experience_years as experience,
+          '' as description, 'approved' as status, c.created_at as createdAt, c.updated_at as updatedAt
+        FROM users u 
+        LEFT JOIN cooks c ON u.id = c.user_id 
+        WHERE u.id = ? AND u.user_type = 'cook'`,
         [id]
       );
-      const result = rows as MySQLCookRegistration[];
-      return result.length > 0 ? result[0] : null;
+      
+      const result = rows as any[];
+      if (result.length === 0) return null;
+      
+      const row = result[0];
+      return {
+        ...row,
+        cuisineTypes: ['Indian'], // Default cuisine type
+        specialties: [],
+        city: row.address ? row.address.split(',')[1]?.trim() || '' : '',
+        state: row.address ? row.address.split(',')[2]?.split('-')[0]?.trim() || '' : '',
+        pincode: row.address ? row.address.split('-').pop()?.trim() || '' : ''
+      };
     } finally {
       connection.release();
     }
@@ -121,9 +178,11 @@ export class MySQLCookStorage {
   async updateCookRegistrationStatus(id: number, status: string): Promise<MySQLCookRegistration | null> {
     const connection = await pool.getConnection();
     try {
+      // Update user status (assuming status 1 = approved, 0 = rejected)
+      const userStatus = status === 'approved' ? 1 : 0;
       await connection.execute(
-        `UPDATE cooks SET status = ?, updated_at = NOW() WHERE id = ?`,
-        [status, id]
+        `UPDATE users SET status = ?, updated_at = NOW() WHERE id = ?`,
+        [userStatus, id]
       );
       
       return await this.getCookRegistrationById(id);

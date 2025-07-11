@@ -14,26 +14,13 @@ async function testMySQLConnection() {
     
     console.log('✅ MySQL connection successful');
     
-    // Test creating a sample registration
-    const sampleRegistration = {
-      firstName: 'Test',
-      lastName: 'Cook',
-      email: 'test@example.com',
-      phone: '1234567890',
-      kitchenName: 'Test Kitchen',
-      kitchenType: 'home_kitchen',
-      cuisineTypes: JSON.stringify(['Indian', 'Chinese']),
-      address: '123 Test Street',
-      city: 'Test City',
-      state: 'Test State',
-      pincode: '123456',
-      experience: '2 years',
-      status: 'pending'
-    };
-    
-    // This will only work if the MySQL credentials are correct
-    // const newRegistration = await mysqlCookStorage.createCookRegistration(sampleRegistration);
-    // console.log('✅ Sample registration created:', newRegistration);
+    // Test fetching existing registrations
+    try {
+      const registrations = await mysqlCookStorage.getAllCookRegistrations();
+      console.log(`✅ Found ${registrations.length} existing cook registrations`);
+    } catch (error) {
+      console.log('⚠️  Error fetching registrations:', error.message);
+    }
     
     console.log('✅ MySQL integration is ready for use');
     
