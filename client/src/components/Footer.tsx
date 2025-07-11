@@ -1,6 +1,26 @@
 import { Facebook, Twitter, Instagram, Youtube, MapPin, Phone, Mail } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 const Footer = () => {
+  const { data: footerPages = [] } = useQuery({
+    queryKey: ["/api/footer-pages"],
+  });
+
+  // Group footer pages by category
+  const groupedPages = footerPages.reduce((acc: any, page: any) => {
+    if (!acc[page.category]) {
+      acc[page.category] = [];
+    }
+    acc[page.category].push(page);
+    return acc;
+  }, {});
+
+  // Sort pages within each category by order
+  Object.keys(groupedPages).forEach(category => {
+    groupedPages[category].sort((a: any, b: any) => a.order - b.order);
+  });
+
+  // Default footer links with dynamic content integration
   const footerLinks = {
     company: [
       "About Us",
@@ -27,6 +47,7 @@ const Footer = () => {
       "Advertise"
     ],
     forYou: [
+      ...(groupedPages["Legal"] ? groupedPages["Legal"].map((page: any) => page.title) : []),
       "Privacy Policy",
       "Terms & Conditions",
       "Cookie Policy",

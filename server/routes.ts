@@ -119,6 +119,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Public footer pages endpoint
+  app.get('/api/footer-pages', async (req, res) => {
+    try {
+      const pages = await storage.getAllFooterPages();
+      // Only return published pages for public endpoint
+      const publishedPages = pages.filter(page => page.isPublished);
+      res.json(publishedPages);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch footer pages" });
+    }
+  });
+
   // Admin API Routes (protected)
   // Cities management
   app.get('/api/admin/cities', requireAuth, async (req, res) => {

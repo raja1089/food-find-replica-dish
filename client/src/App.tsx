@@ -8,6 +8,9 @@ import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminCities from "./pages/admin/AdminCities";
+import AdminRestaurants from "./pages/admin/AdminRestaurants";
+import AdminFeatures from "./pages/admin/AdminFeatures";
+import AdminStats from "./pages/admin/AdminStats";
 import AdminHero from "./pages/admin/AdminHero";
 import AdminFooterPages from "./pages/admin/AdminFooterPages";
 
@@ -35,6 +38,9 @@ const App = () => (
         <Route path="/admin/login" component={AdminLogin} />
         <Route path="/admin" component={AdminDashboard} />
         <Route path="/admin/cities" component={AdminCities} />
+        <Route path="/admin/restaurants" component={AdminRestaurants} />
+        <Route path="/admin/features" component={AdminFeatures} />
+        <Route path="/admin/stats" component={AdminStats} />
         <Route path="/admin/hero" component={AdminHero} />
         <Route path="/admin/footer-pages" component={AdminFooterPages} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
