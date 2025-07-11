@@ -11,9 +11,10 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import { ChefHat, MapPin, Phone, Mail, FileText, Star, Clock, Users } from 'lucide-react';
+import { ChefHat, MapPin, Phone, Mail, FileText, Star, Clock, Users, Shield, ArrowRight } from 'lucide-react';
 
 const cookRegistrationFormSchema = insertCookRegistrationSchema.extend({
   cuisineTypes: z.array(z.string()).min(1, 'Please select at least one cuisine type'),
@@ -30,15 +31,39 @@ const cuisineOptions = [
 
 const kitchenTypes = [
   { value: 'home_kitchen', label: 'Home Kitchen' },
-  { value: 'restaurant', label: 'Restaurant' },
+  { value: 'restaurant', label: 'Kitchen' },
   { value: 'cloud_kitchen', label: 'Cloud Kitchen' }
 ];
+
+// OTP verification schema
+const otpSchema = z.object({
+  phone: z.string().min(10, 'Phone number must be at least 10 digits').regex(/^\d+$/, 'Phone number must contain only digits'),
+  otp: z.string().length(6, 'OTP must be 6 digits'),
+});
+
+type OTPFormData = z.infer<typeof otpSchema>;
 
 export default function CookRegistration() {
   const { toast } = useToast();
   const [selectedCuisines, setSelectedCuisines] = useState<string[]>([]);
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
+  const [step, setStep] = useState<'phone' | 'otp' | 'registration'>('phone');
+  const [verifiedPhone, setVerifiedPhone] = useState<string>('');
+  const [otpSent, setOtpSent] = useState(false);
 
+  // Phone verification form
+  const phoneForm = useForm<{ phone: string }>({
+    resolver: zodResolver(z.object({ phone: z.string().min(10, 'Phone number must be at least 10 digits').regex(/^\d+$/, 'Phone number must contain only digits') })),
+    defaultValues: { phone: '' },
+  });
+
+  // OTP verification form
+  const otpForm = useForm<{ otp: string }>({
+    resolver: zodResolver(z.object({ otp: z.string().length(6, 'OTP must be 6 digits') })),
+    defaultValues: { otp: '' },
+  });
+
+  // Registration form
   const form = useForm<CookRegistrationFormData>({
     resolver: zodResolver(cookRegistrationFormSchema),
     defaultValues: {
@@ -62,6 +87,57 @@ export default function CookRegistration() {
     },
   });
 
+  // Send OTP mutation
+  const sendOtpMutation = useMutation({
+    mutationFn: async (phone: string) => {
+      // Simulate OTP sending - in real app, this would call your SMS service
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return { success: true };
+    },
+    onSuccess: () => {
+      setOtpSent(true);
+      setStep('otp');
+      toast({
+        title: 'OTP Sent',
+        description: 'A 6-digit OTP has been sent to your mobile number.',
+      });
+    },
+    onError: () => {
+      toast({
+        title: 'Failed to Send OTP',
+        description: 'There was an error sending the OTP. Please try again.',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  // Verify OTP mutation
+  const verifyOtpMutation = useMutation({
+    mutationFn: async (otp: string) => {
+      // Simulate OTP verification - in real app, this would verify with your backend
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (otp === '123456') { // Demo OTP
+        return { success: true };
+      }
+      throw new Error('Invalid OTP');
+    },
+    onSuccess: () => {
+      setStep('registration');
+      form.setValue('phone', verifiedPhone);
+      toast({
+        title: 'Phone Verified',
+        description: 'Your phone number has been verified successfully.',
+      });
+    },
+    onError: () => {
+      toast({
+        title: 'Invalid OTP',
+        description: 'The OTP you entered is incorrect. Please try again.',
+        variant: 'destructive',
+      });
+    },
+  });
+
   const registerMutation = useMutation({
     mutationFn: async (data: CookRegistrationFormData) => {
       await apiRequest('/api/cook-registration', {
@@ -78,6 +154,9 @@ export default function CookRegistration() {
       form.reset();
       setSelectedCuisines([]);
       setSelectedSpecialties([]);
+      setStep('phone');
+      setVerifiedPhone('');
+      setOtpSent(false);
     },
     onError: (error) => {
       toast({
@@ -104,6 +183,15 @@ export default function CookRegistration() {
     
     setSelectedSpecialties(newSelectedSpecialties);
     form.setValue('specialties', newSelectedSpecialties);
+  };
+
+  const onSendOtp = (data: { phone: string }) => {
+    setVerifiedPhone(data.phone);
+    sendOtpMutation.mutate(data.phone);
+  };
+
+  const onVerifyOtp = (data: { otp: string }) => {
+    verifyOtpMutation.mutate(data.otp);
   };
 
   const onSubmit = (data: CookRegistrationFormData) => {
@@ -149,12 +237,137 @@ export default function CookRegistration() {
           </Card>
         </div>
 
+        {/* Phone Verification Step */}
+        {step === 'phone' && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl flex items-center">
+                <Phone className="mr-2 h-6 w-6" />
+                Verify Your Phone Number
+              </CardTitle>
+              <p className="text-gray-600">We'll send you a verification code to get started</p>
+            </CardHeader>
+            <CardContent>
+              <Form {...phoneForm}>
+                <form onSubmit={phoneForm.handleSubmit(onSendOtp)} className="space-y-4">
+                  <FormField
+                    control={phoneForm.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Enter your 10-digit phone number" 
+                            {...field} 
+                            className="text-lg py-3"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-red-600 hover:bg-red-700 text-white py-3 text-lg"
+                    disabled={sendOtpMutation.isPending}
+                  >
+                    {sendOtpMutation.isPending ? 'Sending OTP...' : 'Send OTP'}
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* OTP Verification Step */}
+        {step === 'otp' && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl flex items-center">
+                <Shield className="mr-2 h-6 w-6" />
+                Enter Verification Code
+              </CardTitle>
+              <p className="text-gray-600">
+                We've sent a 6-digit code to {verifiedPhone}. Please enter it below.
+              </p>
+              <p className="text-sm text-blue-600">Demo: Use 123456 as OTP</p>
+            </CardHeader>
+            <CardContent>
+              <Form {...otpForm}>
+                <form onSubmit={otpForm.handleSubmit(onVerifyOtp)} className="space-y-4">
+                  <FormField
+                    control={otpForm.control}
+                    name="otp"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Enter 6-digit OTP</FormLabel>
+                        <FormControl>
+                          <div className="flex justify-center">
+                            <InputOTP
+                              maxLength={6}
+                              value={field.value}
+                              onChange={field.onChange}
+                            >
+                              <InputOTPGroup>
+                                <InputOTPSlot index={0} />
+                                <InputOTPSlot index={1} />
+                                <InputOTPSlot index={2} />
+                                <InputOTPSlot index={3} />
+                                <InputOTPSlot index={4} />
+                                <InputOTPSlot index={5} />
+                              </InputOTPGroup>
+                            </InputOTP>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex space-x-3">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      className="flex-1"
+                      onClick={() => setStep('phone')}
+                    >
+                      Change Number
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                      disabled={verifyOtpMutation.isPending}
+                    >
+                      {verifyOtpMutation.isPending ? 'Verifying...' : 'Verify OTP'}
+                    </Button>
+                  </div>
+                  <Button 
+                    type="button" 
+                    variant="ghost" 
+                    className="w-full text-red-600 hover:text-red-700"
+                    onClick={() => sendOtpMutation.mutate(verifiedPhone)}
+                    disabled={sendOtpMutation.isPending}
+                  >
+                    {sendOtpMutation.isPending ? 'Sending...' : 'Resend OTP'}
+                  </Button>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Registration Form */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Cook Registration Form</CardTitle>
-          </CardHeader>
-          <CardContent>
+        {step === 'registration' && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">Kitchen Registration Form</CardTitle>
+              <p className="text-green-600 flex items-center">
+                <Shield className="mr-2 h-4 w-4" />
+                Phone verified: {verifiedPhone}
+              </p>
+            </CardHeader>
+            <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 {/* Personal Information */}
@@ -448,13 +661,50 @@ export default function CookRegistration() {
             </Form>
           </CardContent>
         </Card>
+        )}
 
         {/* Footer Note */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-gray-600">
-            By submitting this form, you agree to our terms and conditions. We will review your application and contact you within 2-3 business days.
-          </p>
-        </div>
+        {step === 'registration' && (
+          <div className="mt-8 text-center">
+            <p className="text-sm text-gray-600">
+              By submitting this form, you agree to our terms and conditions. We will review your application and contact you within 2-3 business days.
+            </p>
+          </div>
+        )}
+
+        {/* Get Started Section */}
+        {step === 'phone' && (
+          <div className="mt-8 bg-white rounded-lg p-6 border">
+            <h3 className="text-lg font-semibold mb-4">Get Started - It only takes 10 minutes</h3>
+            <p className="text-gray-600 mb-4">Please keep these documents and details ready for a smooth sign-up</p>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <div className="flex items-center text-green-600">
+                  <div className="w-4 h-4 rounded-full bg-green-600 mr-2"></div>
+                  <span className="text-sm">PAN card</span>
+                </div>
+                <div className="flex items-center text-green-600">
+                  <div className="w-4 h-4 rounded-full bg-green-600 mr-2"></div>
+                  <span className="text-sm">FSSAI license</span>
+                </div>
+                <div className="flex items-center text-green-600">
+                  <div className="w-4 h-4 rounded-full bg-green-600 mr-2"></div>
+                  <span className="text-sm">Bank account details</span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center text-green-600">
+                  <div className="w-4 h-4 rounded-full bg-green-600 mr-2"></div>
+                  <span className="text-sm">GST number, if applicable</span>
+                </div>
+                <div className="flex items-center text-green-600">
+                  <div className="w-4 h-4 rounded-full bg-green-600 mr-2"></div>
+                  <span className="text-sm">Menu & profile food image</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

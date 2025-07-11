@@ -60,7 +60,7 @@ const Hero = () => {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                 <Input
-                  placeholder="Search for restaurants, cuisines or dishes"
+                  placeholder="Search for kitchens, cuisines or dishes"
                   className="pl-12 h-12 text-base border-border"
                 />
               </div>

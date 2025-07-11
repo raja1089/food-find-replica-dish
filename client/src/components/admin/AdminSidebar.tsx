@@ -40,7 +40,7 @@ const AdminSidebar = ({ onLogout }: AdminSidebarProps) => {
       current: location === "/admin/cities"
     },
     {
-      name: "Restaurants",
+      name: "Kitchens",
       href: "/admin/restaurants", 
       icon: Building,
       current: location === "/admin/restaurants"

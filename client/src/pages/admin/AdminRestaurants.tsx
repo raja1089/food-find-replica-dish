@@ -50,13 +50,13 @@ const AdminRestaurants = () => {
       resetForm();
       toast({
         title: "Success",
-        description: "Restaurant created successfully",
+        description: "Kitchen created successfully",
       });
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to create restaurant",
+        description: "Failed to create kitchen",
         variant: "destructive",
       });
     },
@@ -76,13 +76,13 @@ const AdminRestaurants = () => {
       resetForm();
       toast({
         title: "Success",
-        description: "Restaurant updated successfully",
+        description: "Kitchen updated successfully",
       });
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to update restaurant",
+        description: "Failed to update kitchen",
         variant: "destructive",
       });
     },
@@ -98,13 +98,13 @@ const AdminRestaurants = () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/restaurants"] });
       toast({
         title: "Success",
-        description: "Restaurant deleted successfully",
+        description: "Kitchen deleted successfully",
       });
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to delete restaurant",
+        description: "Failed to delete kitchen",
         variant: "destructive",
       });
     },
@@ -165,25 +165,25 @@ const AdminRestaurants = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Restaurants</h1>
-            <p className="text-gray-600">Manage restaurant listings</p>
+            <h1 className="text-3xl font-bold text-gray-900">Kitchens</h1>
+            <p className="text-gray-600">Manage kitchen listings</p>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button onClick={resetForm}>
                 <Plus className="mr-2 h-4 w-4" />
-                Add Restaurant
+                Add Kitchen
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md">
               <DialogHeader>
                 <DialogTitle>
-                  {editingRestaurant ? "Edit Restaurant" : "Add New Restaurant"}
+                  {editingRestaurant ? "Edit Kitchen" : "Add New Kitchen"}
                 </DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <Label htmlFor="name">Restaurant Name</Label>
+                  <Label htmlFor="name">Kitchen Name</Label>
                   <Input
                     id="name"
                     value={formData.name}
@@ -268,13 +268,13 @@ const AdminRestaurants = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>All Restaurants ({restaurants.length})</CardTitle>
+            <CardTitle>All Kitchens ({restaurants.length})</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Restaurant</TableHead>
+                  <TableHead>Kitchen</TableHead>
                   <TableHead>Cuisine</TableHead>
                   <TableHead>City</TableHead>
                   <TableHead>Rating</TableHead>
