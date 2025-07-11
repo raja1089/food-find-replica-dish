@@ -1,74 +1,119 @@
-import { MapPin, Search, User, ShoppingCart, ChefHat } from "lucide-react";
+import { useState } from "react";
+import { Menu, X, ChefHat, Phone, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 
 const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [location] = useLocation();
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const isActive = (path: string) => location === path;
+
   return (
-    <header className="bg-card border-b border-border sticky top-0 z-50 card-shadow">
-      <div className="container mx-auto px-4 py-3">
-        <div className="flex items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-border z-50">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">Z</span>
+              <ChefHat className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-primary">Zomato</span>
-          </div>
+            <span className="text-xl font-bold text-foreground">HomemadeFood</span>
+          </Link>
 
-          {/* Location Selector */}
-          <div className="hidden md:flex items-center space-x-3 bg-muted rounded-lg px-4 py-2">
-            <MapPin className="w-4 h-4 text-muted-foreground" />
-            <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground">Deliver to</span>
-              <span className="text-sm font-medium text-foreground">Mumbai, Maharashtra</span>
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            <nav className="flex items-center space-x-6">
+              <Link href="/" className={`text-sm font-medium transition-colors ${isActive('/') ? 'text-primary' : 'text-foreground hover:text-primary'}`}>
+                Home
+              </Link>
+              <Link href="/about" className={`text-sm font-medium transition-colors ${isActive('/about') ? 'text-primary' : 'text-foreground hover:text-primary'}`}>
+                About
+              </Link>
+              <Link href="/how-it-works" className={`text-sm font-medium transition-colors ${isActive('/how-it-works') ? 'text-primary' : 'text-foreground hover:text-primary'}`}>
+                How It Works
+              </Link>
+              <Link href="/contact" className={`text-sm font-medium transition-colors ${isActive('/contact') ? 'text-primary' : 'text-foreground hover:text-primary'}`}>
+                Contact
+              </Link>
+            </nav>
+
+            {/* Contact Info */}
+            <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+              <div className="flex items-center space-x-1">
+                <Phone className="w-4 h-4" />
+                <span>+91 98765 43210</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Mail className="w-4 h-4" />
+                <span>info@homemadefood.com</span>
+              </div>
             </div>
-            <button className="text-xs text-primary font-medium">Change</button>
-          </div>
 
-          {/* Search Bar - Hidden on mobile */}
-          <div className="hidden lg:flex items-center flex-1 max-w-md mx-8">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-              <Input
-                placeholder="Search for restaurants, cuisines or dishes"
-                className="pl-10 bg-muted border-border focus:ring-primary"
-              />
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center space-x-3">
-            <Link href="/kitchen-registration">
-              <Button variant="ghost" size="sm" className="hidden sm:flex items-center space-x-1 text-red-600 hover:text-red-700 hover:bg-red-50">
-                <ChefHat className="w-4 h-4" />
-                <span>Register Kitchen</span>
-              </Button>
-            </Link>
-            <Button variant="ghost" size="sm" className="hidden sm:flex items-center space-x-1">
-              <User className="w-4 h-4" />
-              <span>Login</span>
-            </Button>
-            <Button variant="ghost" size="sm" className="relative">
-              <ShoppingCart className="w-4 h-4" />
-              <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                0
-              </span>
+            {/* CTA Button */}
+            <Button 
+              size="sm" 
+              className="bg-gradient-primary text-primary-foreground hover:scale-105 transition-transform"
+              onClick={() => window.location.href = '/cook-registration'}
+            >
+              Join as Cook
             </Button>
           </div>
-        </div>
 
-        {/* Mobile Search */}
-        <div className="lg:hidden mt-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-            <Input
-              placeholder="Search for restaurants, cuisines or dishes"
-              className="pl-10 bg-muted border-border focus:ring-primary"
-            />
-          </div>
+          {/* Mobile Menu Button */}
+          <button
+            onClick={toggleMenu}
+            className="md:hidden p-2 rounded-lg hover:bg-accent transition-colors"
+          >
+            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="md:hidden bg-white/95 backdrop-blur-md border-t border-border">
+          <div className="container mx-auto px-4 py-4">
+            <nav className="space-y-4">
+              <Link href="/" className={`block py-2 px-3 rounded-lg transition-colors ${isActive('/') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'}`}>
+                Home
+              </Link>
+              <Link href="/about" className={`block py-2 px-3 rounded-lg transition-colors ${isActive('/about') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'}`}>
+                About
+              </Link>
+              <Link href="/how-it-works" className={`block py-2 px-3 rounded-lg transition-colors ${isActive('/how-it-works') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'}`}>
+                How It Works
+              </Link>
+              <Link href="/contact" className={`block py-2 px-3 rounded-lg transition-colors ${isActive('/contact') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'}`}>
+                Contact
+              </Link>
+              <div className="pt-4 border-t border-border space-y-2">
+                <div className="text-sm text-muted-foreground">
+                  <div className="flex items-center space-x-2 mb-1">
+                    <Phone className="w-4 h-4" />
+                    <span>+91 98765 43210</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Mail className="w-4 h-4" />
+                    <span>info@homemadefood.com</span>
+                  </div>
+                </div>
+                <Button 
+                  size="sm" 
+                  className="w-full bg-gradient-primary text-primary-foreground"
+                  onClick={() => window.location.href = '/cook-registration'}
+                >
+                  Join as Cook
+                </Button>
+              </div>
+            </nav>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

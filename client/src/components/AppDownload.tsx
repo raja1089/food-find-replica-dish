@@ -1,76 +1,126 @@
-import { Smartphone, Download } from "lucide-react";
+import { Smartphone, Download, ChefHat, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import appLogo from "@/assets/app-logo.png";
 
 const AppDownload = () => {
   return (
-    <section className="py-16 bg-gradient-primary">
+    <section className="py-20 bg-gradient-primary">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left Content */}
-          <div className="text-left">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-              Get the Zomato app
-            </h2>
-            <p className="text-white/90 text-lg mb-6 leading-relaxed">
-              We will send you a link, open it on your phone to download the app
+        {/* Section Header */}
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
+            Get Our Mobile Apps
+          </h2>
+          <p className="text-white/90 text-xl max-w-3xl mx-auto leading-relaxed">
+            Download our dedicated apps for the best homemade food experience
+          </p>
+        </div>
+
+        {/* App Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+          {/* Customer App */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-white/20">
+            <div className="bg-white/20 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <User className="w-10 h-10 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-4">Customer App</h3>
+            <p className="text-white/80 mb-6 text-lg">
+              Order authentic homemade meals from local home chefs in your area
             </p>
-            
-            {/* Input Method Selection */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 space-y-4">
-              <div className="flex space-x-4">
-                <label className="flex items-center space-x-2 text-white">
-                  <input type="radio" name="method" defaultChecked className="text-primary" />
-                  <span>Email</span>
-                </label>
-                <label className="flex items-center space-x-2 text-white">
-                  <input type="radio" name="method" className="text-primary" />
-                  <span>Phone</span>
-                </label>
-              </div>
-              
-              <div className="flex space-x-3">
-                <input 
-                  type="email" 
-                  placeholder="Email" 
-                  className="flex-1 px-4 py-3 rounded-lg border border-white/20 bg-white/10 text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
+            <ul className="text-white/90 space-y-2 mb-8 text-left">
+              <li className="flex items-center">
+                <span className="w-2 h-2 bg-primary-glow rounded-full mr-3"></span>
+                Browse local home kitchens
+              </li>
+              <li className="flex items-center">
+                <span className="w-2 h-2 bg-primary-glow rounded-full mr-3"></span>
+                Real-time order tracking
+              </li>
+              <li className="flex items-center">
+                <span className="w-2 h-2 bg-primary-glow rounded-full mr-3"></span>
+                Multiple payment options
+              </li>
+              <li className="flex items-center">
+                <span className="w-2 h-2 bg-primary-glow rounded-full mr-3"></span>
+                Rate and review meals
+              </li>
+            </ul>
+            <div className="space-y-4">
+              <h4 className="text-white font-semibold">Download Customer App</h4>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <img 
+                  src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" 
+                  alt="Download Customer App on App Store"
+                  className="h-12 hover:scale-105 transition-smooth cursor-pointer"
                 />
-                <button className="bg-primary hover:bg-primary-glow text-white px-6 py-3 rounded-lg font-semibold transition-smooth">
-                  Share App Link
-                </button>
+                <img 
+                  src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" 
+                  alt="Get Customer App on Google Play"
+                  className="h-12 hover:scale-105 transition-smooth cursor-pointer"
+                />
               </div>
             </div>
           </div>
 
-          {/* Right Side - App Mockup */}
-          <div className="relative flex justify-center lg:justify-end">
-            <div className="relative">
-              <img 
-                src={appLogo} 
-                alt="Zomato App Mockup" 
-                className="w-64 h-auto rounded-3xl shadow-2xl"
-              />
-              <div className="absolute -top-4 -right-4 w-8 h-8 bg-yellow-400 rounded-full animate-pulse"></div>
-              <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-green-400 rounded-full animate-bounce"></div>
+          {/* Cook App */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-white/20">
+            <div className="bg-white/20 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <ChefHat className="w-10 h-10 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-4">Cook App</h3>
+            <p className="text-white/80 mb-6 text-lg">
+              Start your home kitchen business and reach customers in your neighborhood
+            </p>
+            <ul className="text-white/90 space-y-2 mb-8 text-left">
+              <li className="flex items-center">
+                <span className="w-2 h-2 bg-primary-glow rounded-full mr-3"></span>
+                Manage your kitchen profile
+              </li>
+              <li className="flex items-center">
+                <span className="w-2 h-2 bg-primary-glow rounded-full mr-3"></span>
+                Upload menu and prices
+              </li>
+              <li className="flex items-center">
+                <span className="w-2 h-2 bg-primary-glow rounded-full mr-3"></span>
+                Receive and manage orders
+              </li>
+              <li className="flex items-center">
+                <span className="w-2 h-2 bg-primary-glow rounded-full mr-3"></span>
+                Track earnings and analytics
+              </li>
+            </ul>
+            <div className="space-y-4">
+              <h4 className="text-white font-semibold">Download Cook App</h4>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <img 
+                  src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" 
+                  alt="Download Cook App on App Store"
+                  className="h-12 hover:scale-105 transition-smooth cursor-pointer"
+                />
+                <img 
+                  src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" 
+                  alt="Get Cook App on Google Play"
+                  className="h-12 hover:scale-105 transition-smooth cursor-pointer"
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Download Badges */}
-        <div className="mt-8 text-center">
-          <p className="text-white/80 mb-4">Download app from</p>
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-            <img 
-              src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" 
-              alt="Download on App Store"
-              className="h-12 hover:scale-105 transition-smooth cursor-pointer"
-            />
-            <img 
-              src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" 
-              alt="Get it on Google Play"
-              className="h-12 hover:scale-105 transition-smooth cursor-pointer"
-            />
-          </div>
+        {/* Cook Registration CTA */}
+        <div className="text-center bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+          <h3 className="text-2xl font-bold text-white mb-4">
+            Ready to Start Your Home Kitchen Business?
+          </h3>
+          <p className="text-white/80 mb-6 text-lg">
+            Join our community of home chefs and start earning from your cooking passion
+          </p>
+          <Button 
+            className="bg-white text-primary hover:bg-white/90 font-semibold text-lg px-8 py-4 rounded-xl"
+            onClick={() => window.location.href = '/cook-registration'}
+          >
+            Register Your Kitchen
+          </Button>
         </div>
       </div>
     </section>
