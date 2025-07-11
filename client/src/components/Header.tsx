@@ -39,10 +39,10 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center space-x-3">
-            <Link href="/cook-registration">
+            <Link href="/kitchen-registration">
               <Button variant="ghost" size="sm" className="hidden sm:flex items-center space-x-1 text-red-600 hover:text-red-700 hover:bg-red-50">
                 <ChefHat className="w-4 h-4" />
-                <span>Partner with us</span>
+                <span>Register Kitchen</span>
               </Button>
             </Link>
             <Button variant="ghost" size="sm" className="hidden sm:flex items-center space-x-1">

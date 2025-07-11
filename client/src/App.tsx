@@ -48,7 +48,7 @@ const App = () => (
         <Route path="/admin/hero" component={AdminHero} />
         <Route path="/admin/footer-pages" component={AdminFooterPages} />
         <Route path="/admin/cook-registrations" component={AdminCookRegistrations} />
-        <Route path="/cook-registration" component={CookRegistration} />
+        <Route path="/kitchen-registration" component={CookRegistration} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route component={NotFound} />
       </Switch>

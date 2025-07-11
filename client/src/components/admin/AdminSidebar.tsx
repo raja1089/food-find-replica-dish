@@ -70,7 +70,7 @@ const AdminSidebar = ({ onLogout }: AdminSidebarProps) => {
       current: location === "/admin/hero"
     },
     {
-      name: "Cook Registrations",
+      name: "Kitchen Registrations",
       href: "/admin/cook-registrations",
       icon: ChefHat,
       current: location === "/admin/cook-registrations"

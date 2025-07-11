@@ -149,7 +149,7 @@ export default function CookRegistration() {
     onSuccess: () => {
       toast({
         title: 'Registration Submitted!',
-        description: 'Your cook registration has been submitted successfully. We will review your application and get back to you soon.',
+        description: 'Your kitchen registration has been submitted successfully. We will review your application and get back to you soon.',
       });
       form.reset();
       setSelectedCuisines([]);
@@ -161,7 +161,7 @@ export default function CookRegistration() {
     onError: (error) => {
       toast({
         title: 'Registration Failed',
-        description: error.message || 'There was an error submitting your registration. Please try again.',
+        description: error.message || 'There was an error submitting your kitchen registration. Please try again.',
         variant: 'destructive',
       });
     },
@@ -205,10 +205,10 @@ export default function CookRegistration() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
             <ChefHat className="h-12 w-12 text-red-500 mr-3" />
-            <h1 className="text-4xl font-bold text-gray-900">Join as a Cook Partner</h1>
+            <h1 className="text-4xl font-bold text-gray-900">Kitchen Registration</h1>
           </div>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Share your culinary passion with food lovers in your city. Join our platform as a cook partner and start your journey in the food delivery business.
+            Share your culinary passion with food lovers in your city. Register your kitchen and start your journey in the food delivery business.
           </p>
         </div>
 

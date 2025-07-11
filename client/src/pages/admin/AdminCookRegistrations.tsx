@@ -81,8 +81,8 @@ export default function AdminCookRegistrations() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Cook Registrations</h1>
-            <p className="text-gray-600 mt-2">Manage cook partnership applications</p>
+            <h1 className="text-3xl font-bold text-gray-900">Kitchen Registrations</h1>
+            <p className="text-gray-600 mt-2">Manage kitchen partnership applications</p>
           </div>
           <Button onClick={handleLogout} variant="outline">
             Logout
@@ -100,7 +100,7 @@ export default function AdminCookRegistrations() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Cook Name</TableHead>
+                  <TableHead>Kitchen Owner</TableHead>
                   <TableHead>Kitchen Name</TableHead>
                   <TableHead>Kitchen Type</TableHead>
                   <TableHead>City</TableHead>
@@ -154,7 +154,7 @@ export default function AdminCookRegistrations() {
                           </DialogTrigger>
                           <DialogContent className="max-w-2xl">
                             <DialogHeader>
-                              <DialogTitle>Cook Registration Details</DialogTitle>
+                              <DialogTitle>Kitchen Registration Details</DialogTitle>
                             </DialogHeader>
                             {selectedRegistration && (
                               <div className="space-y-6">
@@ -274,7 +274,7 @@ export default function AdminCookRegistrations() {
             {registrations.length === 0 && (
               <div className="text-center py-8">
                 <ChefHat className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">No cook registrations found.</p>
+                <p className="text-gray-600">No kitchen registrations found.</p>
               </div>
             )}
           </CardContent>
