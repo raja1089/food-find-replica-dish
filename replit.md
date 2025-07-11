@@ -4,6 +4,8 @@
 
 This is a full-stack web application built with React/TypeScript frontend and Express.js backend, designed as a food delivery platform similar to Zomato. The application features a modern UI built with shadcn/ui components, PostgreSQL database with Drizzle ORM, and a comprehensive component-based architecture.
 
+**Latest Update:** Successfully migrated from Lovable to Replit with complete database integration and admin management system. The application is now fully dynamic with real data stored in PostgreSQL.
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
@@ -45,7 +47,11 @@ Preferred communication style: Simple, everyday language.
 - **Development Integration**: Vite middleware for seamless development experience
 
 ### Database Schema
-- **Users Table**: Basic user management with username/password authentication
+- **Admins Table**: Admin user management with encrypted passwords for dashboard access
+- **Cities Table**: City information with restaurant counts and popularity flags
+- **Restaurants Table**: Restaurant details with ratings, delivery times, and city associations
+- **Features Table**: Dynamic app features with ordering and status management
+- **Stats Table**: Real-time application statistics for dashboard display
 - **Drizzle Integration**: Type-safe database operations with Zod validation schemas
 
 ## Data Flow
@@ -96,3 +102,18 @@ Preferred communication style: Simple, everyday language.
 - `npm run db:push`: Push database schema changes
 
 The application follows modern web development practices with a focus on type safety, developer experience, and maintainable architecture. The food delivery theme is implemented throughout the UI with Zomato-inspired design elements and comprehensive component coverage.
+
+## Recent Changes (January 2025)
+
+- **Database Migration**: Converted from in-memory storage to PostgreSQL with complete schema
+- **Admin System**: Built secure admin authentication with session management
+- **Admin Dashboard**: Full CRUD operations for cities, restaurants, features, and stats
+- **Dynamic Frontend**: All sections now pull real data from the database
+- **Security**: Implemented password hashing with bcrypt and session-based authentication
+- **Routing**: Converted from React Router to Wouter for Replit compatibility
+- **API Layer**: Complete REST API with protected admin routes and public data endpoints
+
+## Admin Access
+- **URL**: `/admin/login`
+- **Credentials**: username=admin, password=admin123
+- **Features**: Complete content management system for all dynamic sections

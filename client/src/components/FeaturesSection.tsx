@@ -1,7 +1,12 @@
 import { Leaf, Heart, Star, ShieldCheck, Clock, Truck } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 const FeaturesSection = () => {
-  const features = [
+  const { data: features = [], isLoading } = useQuery({
+    queryKey: ["/api/features"],
+  });
+
+  const mockFeatures = features.length > 0 ? [] : [
     {
       icon: Leaf,
       title: "Veg Mode",
@@ -60,8 +65,13 @@ const FeaturesSection = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feature, index) => {
-            const Icon = feature.icon;
+          {(features.length > 0 ? features : mockFeatures).map((feature: any, index: number) => {
+            const iconName = feature.icon || feature.iconName;
+            const Icon = iconName === 'Clock' ? Clock : 
+                        iconName === 'MapPin' ? Truck : 
+                        iconName === 'Shield' ? ShieldCheck : 
+                        iconName === 'Headphones' ? Heart : 
+                        feature.icon || Clock;
             return (
               <div
                 key={index}

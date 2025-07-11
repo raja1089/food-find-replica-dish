@@ -1,22 +1,27 @@
 import { Building, MapPin, Package, Star } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 const StatsSection = () => {
-  const stats = [
+  const { data: stats, isLoading } = useQuery({
+    queryKey: ["/api/stats"],
+  });
+
+  const statsDisplay = [
     {
       icon: Building,
-      number: "3,00,000+",
+      number: isLoading ? "..." : `${(stats?.restaurants || 0).toLocaleString()}+`,
       label: "restaurants",
       color: "text-primary"
     },
     {
       icon: MapPin,
-      number: "800+",
+      number: isLoading ? "..." : `${stats?.cities || 0}+`,
       label: "cities",
       color: "text-orange-500"
     },
     {
       icon: Package,
-      number: "3 billion+",
+      number: isLoading ? "..." : `${((stats?.orders || 0) / 1000000000).toFixed(1)} billion+`,
       label: "orders delivered",
       color: "text-green-500"
     },
@@ -44,7 +49,7 @@ const StatsSection = () => {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-          {stats.map((stat, index) => {
+          {statsDisplay.map((stat, index) => {
             const Icon = stat.icon;
             return (
               <div

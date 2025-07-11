@@ -1,8 +1,29 @@
 import { Star, Clock, Bike } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useQuery } from "@tanstack/react-query";
+import type { Restaurant } from "@shared/schema";
 
 const RestaurantGrid = () => {
-  const restaurants = [
+  const { data: restaurants = [], isLoading } = useQuery({
+    queryKey: ["/api/restaurants"],
+  });
+
+  if (isLoading) {
+    return (
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-foreground mb-8">Best food near you</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, index) => (
+              <div key={index} className="animate-pulse bg-gray-300 rounded-xl h-64" />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const mockRestaurants = restaurants.length > 0 ? [] : [
     {
       name: "KFC",
       cuisine: "Burgers, Fast Food",
@@ -84,9 +105,9 @@ const RestaurantGrid = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {restaurants.map((restaurant, index) => (
+          {(restaurants.length > 0 ? restaurants : mockRestaurants).map((restaurant: any, index: number) => (
             <div
-              key={index}
+              key={restaurant.id || index}
               className="group bg-card rounded-xl overflow-hidden card-shadow hover:shadow-elegant transition-smooth hover:scale-105 cursor-pointer"
             >
               {/* Restaurant Image */}

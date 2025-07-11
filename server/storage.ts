@@ -1,39 +1,173 @@
-import { users, type User, type InsertUser } from "@shared/schema";
-
-// modify the interface with any CRUD methods
-// you might need
+import { 
+  admins, 
+  cities, 
+  restaurants, 
+  features, 
+  stats,
+  type Admin, 
+  type InsertAdmin,
+  type City,
+  type InsertCity,
+  type Restaurant,
+  type InsertRestaurant,
+  type Feature,
+  type InsertFeature,
+  type Stats,
+  type InsertStats
+} from "@shared/schema";
+import { db } from "./db";
+import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: number): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  // Admin operations
+  getAdminByUsername(username: string): Promise<Admin | undefined>;
+  createAdmin(admin: InsertAdmin): Promise<Admin>;
+  
+  // City operations
+  getAllCities(): Promise<City[]>;
+  getPopularCities(): Promise<City[]>;
+  getCityById(id: number): Promise<City | undefined>;
+  createCity(city: InsertCity): Promise<City>;
+  updateCity(id: number, city: Partial<InsertCity>): Promise<City>;
+  deleteCity(id: number): Promise<void>;
+  
+  // Restaurant operations
+  getAllRestaurants(): Promise<Restaurant[]>;
+  getRestaurantsByCity(cityId: number): Promise<Restaurant[]>;
+  getRestaurantById(id: number): Promise<Restaurant | undefined>;
+  createRestaurant(restaurant: InsertRestaurant): Promise<Restaurant>;
+  updateRestaurant(id: number, restaurant: Partial<InsertRestaurant>): Promise<Restaurant>;
+  deleteRestaurant(id: number): Promise<void>;
+  
+  // Feature operations
+  getAllFeatures(): Promise<Feature[]>;
+  getActiveFeatures(): Promise<Feature[]>;
+  getFeatureById(id: number): Promise<Feature | undefined>;
+  createFeature(feature: InsertFeature): Promise<Feature>;
+  updateFeature(id: number, feature: Partial<InsertFeature>): Promise<Feature>;
+  deleteFeature(id: number): Promise<void>;
+  
+  // Stats operations
+  getStats(): Promise<Stats | undefined>;
+  updateStats(stats: InsertStats): Promise<Stats>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  currentId: number;
-
-  constructor() {
-    this.users = new Map();
-    this.currentId = 1;
+export class DatabaseStorage implements IStorage {
+  // Admin operations
+  async getAdminByUsername(username: string): Promise<Admin | undefined> {
+    const [admin] = await db.select().from(admins).where(eq(admins.username, username));
+    return admin;
   }
 
-  async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+  async createAdmin(admin: InsertAdmin): Promise<Admin> {
+    const [newAdmin] = await db.insert(admins).values(admin).returning();
+    return newAdmin;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  // City operations
+  async getAllCities(): Promise<City[]> {
+    return await db.select().from(cities).orderBy(desc(cities.createdAt));
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async getPopularCities(): Promise<City[]> {
+    return await db.select().from(cities).where(eq(cities.isPopular, true)).orderBy(desc(cities.restaurantCount));
+  }
+
+  async getCityById(id: number): Promise<City | undefined> {
+    const [city] = await db.select().from(cities).where(eq(cities.id, id));
+    return city;
+  }
+
+  async createCity(city: InsertCity): Promise<City> {
+    const [newCity] = await db.insert(cities).values(city).returning();
+    return newCity;
+  }
+
+  async updateCity(id: number, city: Partial<InsertCity>): Promise<City> {
+    const [updatedCity] = await db.update(cities).set(city).where(eq(cities.id, id)).returning();
+    return updatedCity;
+  }
+
+  async deleteCity(id: number): Promise<void> {
+    await db.delete(cities).where(eq(cities.id, id));
+  }
+
+  // Restaurant operations
+  async getAllRestaurants(): Promise<Restaurant[]> {
+    return await db.select().from(restaurants).orderBy(desc(restaurants.createdAt));
+  }
+
+  async getRestaurantsByCity(cityId: number): Promise<Restaurant[]> {
+    return await db.select().from(restaurants).where(eq(restaurants.cityId, cityId));
+  }
+
+  async getRestaurantById(id: number): Promise<Restaurant | undefined> {
+    const [restaurant] = await db.select().from(restaurants).where(eq(restaurants.id, id));
+    return restaurant;
+  }
+
+  async createRestaurant(restaurant: InsertRestaurant): Promise<Restaurant> {
+    const [newRestaurant] = await db.insert(restaurants).values(restaurant).returning();
+    return newRestaurant;
+  }
+
+  async updateRestaurant(id: number, restaurant: Partial<InsertRestaurant>): Promise<Restaurant> {
+    const [updatedRestaurant] = await db.update(restaurants).set(restaurant).where(eq(restaurants.id, id)).returning();
+    return updatedRestaurant;
+  }
+
+  async deleteRestaurant(id: number): Promise<void> {
+    await db.delete(restaurants).where(eq(restaurants.id, id));
+  }
+
+  // Feature operations
+  async getAllFeatures(): Promise<Feature[]> {
+    return await db.select().from(features).orderBy(features.order);
+  }
+
+  async getActiveFeatures(): Promise<Feature[]> {
+    return await db.select().from(features).where(eq(features.isActive, true)).orderBy(features.order);
+  }
+
+  async getFeatureById(id: number): Promise<Feature | undefined> {
+    const [feature] = await db.select().from(features).where(eq(features.id, id));
+    return feature;
+  }
+
+  async createFeature(feature: InsertFeature): Promise<Feature> {
+    const [newFeature] = await db.insert(features).values(feature).returning();
+    return newFeature;
+  }
+
+  async updateFeature(id: number, feature: Partial<InsertFeature>): Promise<Feature> {
+    const [updatedFeature] = await db.update(features).set(feature).where(eq(features.id, id)).returning();
+    return updatedFeature;
+  }
+
+  async deleteFeature(id: number): Promise<void> {
+    await db.delete(features).where(eq(features.id, id));
+  }
+
+  // Stats operations
+  async getStats(): Promise<Stats | undefined> {
+    const [statsRecord] = await db.select().from(stats).limit(1);
+    return statsRecord;
+  }
+
+  async updateStats(statsData: InsertStats): Promise<Stats> {
+    const existingStats = await this.getStats();
+    
+    if (existingStats) {
+      const [updatedStats] = await db.update(stats)
+        .set({ ...statsData, updatedAt: new Date() })
+        .where(eq(stats.id, existingStats.id))
+        .returning();
+      return updatedStats;
+    } else {
+      const [newStats] = await db.insert(stats).values(statsData).returning();
+      return newStats;
+    }
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
