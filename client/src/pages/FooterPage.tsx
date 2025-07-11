@@ -11,7 +11,7 @@ const FooterPage = () => {
   const slug = params?.slug;
 
   const { data: page, isLoading, error } = useQuery({
-    queryKey: ["/api/footer-pages", slug],
+    queryKey: [`/api/footer-pages/${slug}`],
     enabled: !!slug,
   });
 

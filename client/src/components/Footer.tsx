@@ -23,33 +23,31 @@ const Footer = () => {
   // Default footer links with dynamic content integration
   const footerLinks = {
     company: [
-      "About Us",
-      "Careers",
-      "Team",
-      "FoodFind One",
-      "FoodFind Instant",
-      "FoodFind Genie"
+      ...(groupedPages["Company"] ? groupedPages["Company"].map((page: any) => ({ name: page.title, href: `/page/${page.slug}` })) : []),
+      { name: "Careers", href: "#" },
+      { name: "Team", href: "#" },
+      { name: "FoodFind One", href: "#" },
+      { name: "FoodFind Instant", href: "#" },
+      { name: "FoodFind Genie", href: "#" }
     ],
     forFoodie: [
-      "Code of Conduct",
-      "Community",
-      "Blogger Help",
-      "Mobile Apps",
-      "FoodFind Pro",
-      "Live"
+      { name: "Code of Conduct", href: "#" },
+      { name: "Community", href: "#" },
+      { name: "Blogger Help", href: "#" },
+      { name: "Mobile Apps", href: "#" },
+      { name: "FoodFind Pro", href: "#" },
+      { name: "Live", href: "#" }
     ],
     forRestaurants: [
-      "Partner With Us",
-      "Apps For You",
-      "Restaurant Widgets",
-      "Products for Business",
-      "Restaurant Marketing",
-      "Advertise"
+      { name: "Partner With Us", href: "#" },
+      { name: "Apps For You", href: "#" },
+      { name: "Restaurant Widgets", href: "#" },
+      { name: "Products for Business", href: "#" },
+      { name: "Restaurant Marketing", href: "#" },
+      { name: "Advertise", href: "#" }
     ],
     forYou: [
       ...(groupedPages["Legal"] ? groupedPages["Legal"].map((page: any) => ({ name: page.title, href: `/page/${page.slug}` })) : []),
-      { name: "Privacy Policy", href: "/privacy" },
-      { name: "Terms & Conditions", href: "/terms" },
       { name: "Cookie Policy", href: "/cookies" },
       { name: "Offer Terms", href: "/offers" },
       { name: "Phishing & Fraud", href: "/security" },
@@ -115,8 +113,8 @@ const Footer = () => {
             <ul className="space-y-2">
               {footerLinks.company.map((link, index) => (
                 <li key={index}>
-                  <a href="#" className="text-muted-foreground hover:text-primary text-sm transition-smooth">
-                    {link}
+                  <a href={link.href} className="text-muted-foreground hover:text-primary text-sm transition-smooth">
+                    {link.name}
                   </a>
                 </li>
               ))}
@@ -128,8 +126,8 @@ const Footer = () => {
             <ul className="space-y-2">
               {footerLinks.forFoodie.map((link, index) => (
                 <li key={index}>
-                  <a href="#" className="text-muted-foreground hover:text-primary text-sm transition-smooth">
-                    {link}
+                  <a href={link.href} className="text-muted-foreground hover:text-primary text-sm transition-smooth">
+                    {link.name}
                   </a>
                 </li>
               ))}
@@ -141,8 +139,8 @@ const Footer = () => {
             <ul className="space-y-2">
               {footerLinks.forRestaurants.map((link, index) => (
                 <li key={index}>
-                  <a href="#" className="text-muted-foreground hover:text-primary text-sm transition-smooth">
-                    {link}
+                  <a href={link.href} className="text-muted-foreground hover:text-primary text-sm transition-smooth">
+                    {link.name}
                   </a>
                 </li>
               ))}
@@ -154,15 +152,9 @@ const Footer = () => {
             <ul className="space-y-2">
               {footerLinks.forYou.map((link, index) => (
                 <li key={index}>
-                  {typeof link === 'string' ? (
-                    <a href="#" className="text-muted-foreground hover:text-primary text-sm transition-smooth">
-                      {link}
-                    </a>
-                  ) : (
-                    <a href={link.href} className="text-muted-foreground hover:text-primary text-sm transition-smooth">
-                      {link.name}
-                    </a>
-                  )}
+                  <a href={link.href} className="text-muted-foreground hover:text-primary text-sm transition-smooth">
+                    {link.name}
+                  </a>
                 </li>
               ))}
             </ul>

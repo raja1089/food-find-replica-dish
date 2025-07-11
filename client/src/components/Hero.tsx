@@ -1,15 +1,25 @@
 import { MapPin, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useQuery } from "@tanstack/react-query";
 import heroImage from "@/assets/hero-food.jpg";
 
 const Hero = () => {
+  const { data: heroData } = useQuery({
+    queryKey: ["/api/hero"],
+  });
+
+  const backgroundImage = heroData?.backgroundImage || heroImage;
+  const title = heroData?.title || "Discover the best food & drinks in your city";
+  const subtitle = heroData?.subtitle || "Experience fast & easy online ordering on the FoodFind app";
+  const ctaText = heroData?.ctaText || "Find Food";
+
   return (
     <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
       {/* Background Image with Overlay */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroImage})` }}
+        style={{ backgroundImage: `url(${backgroundImage})` }}
       >
         <div className="absolute inset-0 hero-gradient"></div>
       </div>
@@ -18,15 +28,20 @@ const Hero = () => {
       <div className="relative z-10 container mx-auto px-4 text-center text-white">
         <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
           <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-            Discover the best
-            <br />
-            <span className="text-primary-glow">food & drinks</span>
-            <br />
-            in your city
+            {title.split(' ').map((word, index) => (
+              <span key={index}>
+                {word === 'food' || word === 'drinks' ? (
+                  <span className="text-primary-glow">{word}</span>
+                ) : (
+                  word
+                )}
+                {index < title.split(' ').length - 1 && ' '}
+              </span>
+            ))}
           </h1>
           
           <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
-            Experience fast & easy online ordering on the FoodFind app
+            {subtitle}
           </p>
 
           {/* Search Section */}
@@ -51,7 +66,7 @@ const Hero = () => {
               </div>
 
               <Button className="w-full h-12 bg-gradient-primary text-primary-foreground font-semibold hover:scale-105 transition-bounce">
-                Find Food
+                {ctaText}
               </Button>
             </div>
           </div>
