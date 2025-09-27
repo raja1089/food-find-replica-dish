@@ -37,7 +37,7 @@ const Hero = () => {
   }, [slides.length]);
 
   return (
-    <section className="relative w-full min-h-screen bg-white overflow-hidden">
+    <section className="relative w-full min-h-screen overflow-hidden" style={{ backgroundColor: '#fff' }}>
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-10 left-10 w-32 h-32 bg-orange-200/20 rounded-full animate-pulse"></div>
@@ -118,10 +118,9 @@ const Hero = () => {
                   <img
                     src={slide.image}
                     alt={slide.title}
-                    className="w-80 lg:w-96 h-auto object-contain drop-shadow-2xl"
+                    className="w-80 lg:w-96 h-auto object-contain"
                     style={{ 
-                      animation: 'float 6s ease-in-out infinite',
-                      filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.15))'
+                      animation: 'float 6s ease-in-out infinite'
                     }}
                   />
                 </div>
