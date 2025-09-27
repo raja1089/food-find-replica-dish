@@ -64,6 +64,12 @@ const AdminSidebar = ({ onLogout }: AdminSidebarProps) => {
       current: location === "/admin/footer-pages"
     },
     {
+      name: "Footer Settings",
+      href: "/admin/footer-settings",
+      icon: Settings,
+      current: location === "/admin/footer-settings"
+    },
+    {
       name: "Hero Section",
       href: "/admin/hero",
       icon: Image,

@@ -17,6 +17,7 @@ import AdminFeatures from "./pages/admin/AdminFeatures";
 import AdminStats from "./pages/admin/AdminStats";
 import AdminHero from "./pages/admin/AdminHero";
 import AdminFooterPages from "./pages/admin/AdminFooterPages";
+import AdminFooterSettings from "./pages/admin/AdminFooterSettings";
 import AdminCookRegistrations from "./pages/admin/AdminCookRegistrations";
 import CookRegistration from "./pages/CookRegistration";
 import ChefLogin from "./pages/chef/ChefLogin";
@@ -52,6 +53,7 @@ function Router() {
       <Route path="/admin/stats" component={AdminStats} />
       <Route path="/admin/hero" component={AdminHero} />
       <Route path="/admin/footer-pages" component={AdminFooterPages} />
+      <Route path="/admin/footer-settings" component={AdminFooterSettings} />
       <Route path="/admin/cook-registrations" component={AdminCookRegistrations} />
       <Route path="/kitchen-registration" component={CookRegistration} />
       <Route path="/chef/login" component={ChefLogin} />
