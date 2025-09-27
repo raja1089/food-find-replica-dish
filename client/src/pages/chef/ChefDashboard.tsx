@@ -15,6 +15,7 @@ import {
   ArrowUpRight
 } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
+import { apiService } from "@/lib/api";
 
 interface OrderData {
   id: number;
@@ -63,37 +64,61 @@ const ChefDashboard = () => {
   const loadDashboardData = async () => {
     setIsLoading(true);
     try {
-      // TODO: Call Laravel APIs to fetch dashboard data
-      // const token = localStorage.getItem('chef_token');
-      // const response = await fetch('YOUR_LARAVEL_API/api/chef/dashboard', {
-      //   headers: { Authorization: `Bearer ${token}` }
-      // });
-      // const data = await response.json();
+      console.log("Loading dashboard data from real API...");
       
-      // Mock data for UI preview
+      // Fetch dashboard analytics data
+      const dashboardResponse = await apiService.getDashboard();
+      console.log("Dashboard API response:", dashboardResponse);
+      
+      // Fetch recent orders data  
+      const ordersResponse = await apiService.getOrders();
+      console.log("Orders API response:", ordersResponse);
+      
+      // Fetch dishes data for menu count
+      const dishesResponse = await apiService.getDishes();
+      console.log("Dishes API response:", dishesResponse);
+
+      // Map API response to dashboard data structure
+      const dashboardStats = dashboardResponse.data || dashboardResponse;
+      const ordersData = ordersResponse.data || ordersResponse.orders || [];
+      const dishesData = dishesResponse.data || dishesResponse.dishes || [];
+
       setDashboardData({
         stats: {
-          totalOrders: 142,
-          totalRevenue: 28450,
-          totalDishes: 18,
-          rating: 4.6
+          totalOrders: dashboardStats.total_orders || dashboardStats.totalOrders || 0,
+          totalRevenue: dashboardStats.total_revenue || dashboardStats.totalRevenue || 0,
+          totalDishes: Array.isArray(dishesData) ? dishesData.length : (dashboardStats.total_dishes || 0),
+          rating: dashboardStats.rating || dashboardStats.average_rating || 0.0
         },
-        recentOrders: [
-          { id: 1, customer: "Rahul S.", items: "Butter Chicken, Naan", amount: 485, status: "preparing", time: "2 min ago" },
-          { id: 2, customer: "Priya M.", items: "Biryani, Raita", amount: 320, status: "ready", time: "5 min ago" },
-          { id: 3, customer: "Amit K.", items: "Paneer Tikka, Roti", amount: 275, status: "delivered", time: "12 min ago" }
-        ],
-        popularDishes: [
-          { name: "Butter Chicken", orders: 45, revenue: 11250, trend: "+12%" },
-          { name: "Chicken Biryani", orders: 38, revenue: 9120, trend: "+8%" },
-          { name: "Paneer Tikka", orders: 32, revenue: 6400, trend: "+15%" }
-        ]
+        recentOrders: Array.isArray(ordersData) ? ordersData.slice(0, 5).map((order: any) => ({
+          id: order.id,
+          customer: order.customer_name || order.customer || 'Unknown',
+          items: order.items || order.dish_names || 'Items',
+          amount: order.total_amount || order.amount || 0,
+          status: order.status || 'pending',
+          time: order.created_at || order.time || 'N/A'
+        })) : [],
+        popularDishes: dashboardStats.popular_dishes || dashboardStats.popularDishes || []
       });
-    } catch (error) {
+
       toast({
-        title: "Error",
-        description: "Failed to load dashboard data",
+        title: "Success",
+        description: "Dashboard data loaded successfully",
+      });
+      
+    } catch (error: any) {
+      console.error("Dashboard API error:", error);
+      toast({
+        title: "Error", 
+        description: error.message || "Failed to load dashboard data",
         variant: "destructive",
+      });
+      
+      // Fallback to empty data
+      setDashboardData({
+        stats: { totalOrders: 0, totalRevenue: 0, totalDishes: 0, rating: 0.0 },
+        recentOrders: [],
+        popularDishes: []
       });
     } finally {
       setIsLoading(false);

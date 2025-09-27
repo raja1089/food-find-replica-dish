@@ -593,7 +593,8 @@ app.post("/api/admin/login", async (req, res) => {
   // Chef API Proxy Routes - Forward authenticated requests to Laravel
   app.use("/api/chef", async (req, res) => {
     try {
-      const LARAVEL_API_URL = process.env.LARAVEL_API_URL || 'http://localhost:8000/api';
+      const LARAVEL_API_URL = 'https://sealifepharmaceuticals.com/api';
+      console.log(`🔗 Chef API proxy: ${req.method} ${req.originalUrl} -> ${LARAVEL_API_URL}`);
       
       // Forward the authorization header from the original request
       const headers: any = {
@@ -603,6 +604,9 @@ app.post("/api/admin/login", async (req, res) => {
       
       if (req.headers.authorization) {
         headers['Authorization'] = req.headers.authorization;
+        console.log('🔐 Forwarding Authorization header:', req.headers.authorization.substring(0, 20) + '...');
+      } else {
+        console.log('⚠️ No Authorization header found in request');
       }
 
       const url = req.originalUrl.replace('/api/chef', '');

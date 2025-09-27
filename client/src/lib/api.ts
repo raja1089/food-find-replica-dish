@@ -3,8 +3,8 @@ class ApiService {
   private baseURL: string;
 
   constructor() {
-    // Set your Laravel backend URL here
-    this.baseURL = process.env.REACT_APP_LARAVEL_API_URL || 'http://localhost:8000/api';
+    // Use local proxy endpoints that forward to Laravel backend
+    this.baseURL = '/api';
   }
 
   async request(endpoint: string, options: RequestInit = {}) {
@@ -22,10 +22,13 @@ class ApiService {
     // Add auth token if available
     const token = localStorage.getItem('chef_token');
     if (token) {
+      console.log('🔐 Adding Bearer token to request:', endpoint);
       config.headers = {
         ...config.headers,
         'Authorization': `Bearer ${token}`,
       };
+    } else {
+      console.log('⚠️ No token found in localStorage for request:', endpoint);
     }
 
     try {
@@ -65,45 +68,45 @@ class ApiService {
     });
   }
 
-  // Chef Dashboard APIs
+  // Chef Dashboard APIs - using proxy endpoints
   async getProfile() {
-    return this.request('/cook/profile');
+    return this.request('/chef/cook/profile');
   }
 
   async getDashboard() {
-    return this.request('/cook/analytics/' + this.getChefId());
+    return this.request('/chef/cook/analytics/' + this.getChefId());
   }
 
   async getDishes() {
-    return this.request('/dishes');
+    return this.request('/chef/dishes');
   }
 
   async getOrders() {
-    return this.request('/cook/orders/' + this.getChefId());
+    return this.request('/chef/cook/orders/' + this.getChefId());
   }
 
   async addDish(dishData: any) {
-    return this.request('/add-dishes', {
+    return this.request('/chef/add-dishes', {
       method: 'POST',
       body: JSON.stringify(dishData),
     });
   }
 
   async updateDish(dishId: string, dishData: any) {
-    return this.request(`/update-dish/${dishId}`, {
+    return this.request(`/chef/update-dish/${dishId}`, {
       method: 'PUT',
       body: JSON.stringify(dishData),
     });
   }
 
   async deleteDish(dishId: string) {
-    return this.request(`/dishes/${dishId}`, {
+    return this.request(`/chef/dishes/${dishId}`, {
       method: 'DELETE',
     });
   }
 
   async updateOrderStatus(orderId: string, status: string) {
-    return this.request(`/orders/${orderId}/status`, {
+    return this.request(`/chef/orders/${orderId}/status`, {
       method: 'POST',
       body: JSON.stringify({ status }),
     });
@@ -114,7 +117,11 @@ class ApiService {
       const chefData = localStorage.getItem('chef_data');
       if (chefData) {
         const chef = JSON.parse(chefData);
-        return chef.id || '1'; // Fallback to '1' if no ID found
+        console.log('Chef data from localStorage:', chef);
+        // Use cook_id first, then fallback to id
+        const cookId = chef.cook_id || chef.id;
+        console.log('Using cook_id:', cookId);
+        return cookId ? String(cookId) : '1';
       }
     } catch (error) {
       console.error('Error getting chef ID:', error);

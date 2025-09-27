@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useLocation } from "wouter";
 import { ChefHat, Phone, Shield, ArrowRight } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
+import { apiService } from "@/lib/api";
 
 const ChefLogin = () => {
   const [, setLocation] = useLocation();
@@ -27,23 +28,8 @@ const ChefLogin = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch('/api/send-otp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          phone: phone,
-          user_type: 'cook'
-        })
-      });
-
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to send OTP');
-      }
+      console.log('🚀 Sending OTP using apiService...');
+      const data = await apiService.sendOtp(phone);
       
       toast({
         title: "OTP Sent",
@@ -74,24 +60,8 @@ const ChefLogin = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch('/api/verify-otp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          phone: phone,
-          otp: otp,
-          user_type: 'cook'
-        })
-      });
-
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Invalid OTP');
-      }
+      console.log('🚀 Verifying OTP using apiService...');
+      const data = await apiService.verifyOtp(phone, otp);
 
       // Store the authentication token
       if (data.token) {
@@ -118,23 +88,8 @@ const ChefLogin = () => {
   const handleResendOtp = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/send-otp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          phone: phone,
-          user_type: 'cook'
-        })
-      });
-
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to resend OTP');
-      }
+      console.log('🚀 Resending OTP using apiService...');
+      const data = await apiService.sendOtp(phone);
       
       toast({
         title: "OTP Resent",
