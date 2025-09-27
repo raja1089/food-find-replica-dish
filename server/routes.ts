@@ -1,6 +1,12 @@
-import type { Express } from "express";
+import type { Express, Request } from "express";
 import express from "express";
 import { createServer, type Server } from "http";
+
+// Extend Request interface to include cook properties
+interface AuthenticatedRequest extends Request {
+  cook?: any;
+  cook_id?: number;
+}
 import { storage } from "./storage";
 import {
   insertAdminSchema,
@@ -15,6 +21,7 @@ import {
 import { mysqlCookStorage } from "./mysql-db";
 import bcrypt from "bcrypt";
 import session from "express-session";
+import jwt from "jsonwebtoken";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Add this line to parse JSON request bodies
@@ -38,6 +45,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(401).json({ error: "Unauthorized" });
     }
     next();
+  };
+
+  // JWT authentication middleware for cook APIs
+  const requireCookAuth = (req: AuthenticatedRequest, res: any, next: any) => {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    
+    if (!token) {
+      return res.status(401).json({ error: "Authorization token required" });
+    }
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
+      req.cook = decoded; // Contains cook_id and other cook info
+      req.cook_id = decoded.cook_id;
+      next();
+    } catch (error) {
+      return res.status(401).json({ error: "Invalid or expired token" });
+    }
   };
 
   // Admin Authentication Routes
@@ -372,12 +397,12 @@ app.post("/api/admin/login", async (req, res) => {
           city: registrationData.city,
           state: registrationData.state,
           pincode: registrationData.pincode,
-          fssaiLicense: registrationData.fssaiLicense,
-          gstNumber: registrationData.gstNumber,
-          panNumber: registrationData.panNumber,
+          fssaiLicense: registrationData.fssaiLicense || undefined,
+          gstNumber: registrationData.gstNumber || undefined,
+          panNumber: registrationData.panNumber || undefined,
           experience: registrationData.experience,
           specialties: registrationData.specialties || [],
-          description: registrationData.description,
+          description: registrationData.description || undefined,
           status: "pending",
           latitude: undefined,
           longitude: undefined,
@@ -587,6 +612,183 @@ app.post("/api/admin/login", async (req, res) => {
         error: "Failed to verify OTP", 
         message: "Could not connect to authentication service" 
       });
+    }
+  });
+
+  // Cook Authentication Routes
+  app.post("/api/cook/login", async (req, res) => {
+    try {
+      const { phone, password } = req.body;
+      
+      if (!phone) {
+        return res.status(400).json({ error: "Phone number is required" });
+      }
+
+      // Here you would verify cook credentials against your database
+      // For now, I'll create a simple example
+      const cookData = {
+        cook_id: 1, // This would come from your database
+        phone: phone,
+        // Add other cook data as needed
+      };
+
+      // Generate JWT token with cook_id
+      const token = jwt.sign(
+        { 
+          cook_id: cookData.cook_id, 
+          phone: cookData.phone 
+        },
+        process.env.JWT_SECRET || 'your-secret-key',
+        { expiresIn: '24h' }
+      );
+
+      res.json({
+        success: true,
+        token: token,
+        cook_id: cookData.cook_id,
+        cook: cookData
+      });
+    } catch (error) {
+      console.error("Cook login error:", error);
+      res.status(500).json({ error: "Login failed" });
+    }
+  });
+
+  // Protected Cook GET API Routes
+  app.get("/api/cook/profile", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      // Fetch cook profile from database or external API
+      res.json({ 
+        cook_id,
+        message: "Cook profile retrieved successfully",
+        // Add actual profile data here
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch cook profile" });
+    }
+  });
+
+  app.get("/api/cook/cuisine", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      // Fetch cook cuisine data
+      res.json({ 
+        cook_id,
+        message: "Cook cuisine data retrieved successfully",
+        // Add actual cuisine data here
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch cook cuisine" });
+    }
+  });
+
+  app.get("/api/cook/subregions/:cuisineId", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      const { cuisineId } = req.params;
+      // Fetch subregions for the given cuisine
+      res.json({ 
+        cook_id,
+        cuisineId,
+        message: "Subregions retrieved successfully",
+        // Add actual subregions data here
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch subregions" });
+    }
+  });
+
+  app.get("/api/cook/dishes/:dishId", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      const { dishId } = req.params;
+      // Fetch dish details
+      res.json({ 
+        cook_id,
+        dishId,
+        message: "Dish details retrieved successfully",
+        // Add actual dish data here
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch dish details" });
+    }
+  });
+
+  app.get("/api/cook/kitchen-types", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      // Fetch kitchen types
+      res.json({ 
+        cook_id,
+        message: "Kitchen types retrieved successfully",
+        kitchen_types: ["home_kitchen", "restaurant", "cloud_kitchen"]
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch kitchen types" });
+    }
+  });
+
+  app.get("/api/cook/rewards", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      // Fetch cook rewards
+      res.json({ 
+        cook_id,
+        message: "Cook rewards retrieved successfully",
+        // Add actual rewards data here
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch cook rewards" });
+    }
+  });
+
+  app.get("/api/cook/orders/:cookId", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      const { cookId } = req.params;
+      
+      // Verify that the requested cookId matches the authenticated cook
+      if (parseInt(cookId) !== cook_id) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      // Fetch orders for the cook
+      res.json({ 
+        cook_id,
+        message: "Cook orders retrieved successfully",
+        // Add actual orders data here
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch cook orders" });
+    }
+  });
+
+  app.get("/api/cook/coupons", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      // Fetch cook coupons
+      res.json({ 
+        cook_id,
+        message: "Cook coupons retrieved successfully",
+        // Add actual coupons data here
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch cook coupons" });
+    }
+  });
+
+  app.get("/api/cook/kyc", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      // Fetch cook KYC status
+      res.json({ 
+        cook_id,
+        message: "Cook KYC status retrieved successfully",
+        // Add actual KYC data here
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch cook KYC status" });
     }
   });
 
