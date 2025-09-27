@@ -54,8 +54,8 @@ const Hero = () => {
           <div className="text-center lg:text-left space-y-6">
             <div className="space-y-4">
               {/* Dancing Chef Animation */}
-              <div className="flex justify-center lg:justify-start mb-1">
-                <div className="w-12 h-12 lg:w-16 lg:h-16">
+              <div className="flex justify-center lg:justify-start mb-0">
+                <div className="w-12 h-12 lg:w-16 lg:h-16 -mb-2">
                   <Lottie 
                     animationData={dancingChefAnimation}
                     loop={true}
