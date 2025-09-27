@@ -81,8 +81,22 @@ app.post("/api/admin/login", async (req, res) => {
     
     const isValid = await bcrypt.compare(password, admin.password);
     
-    // ... rest of your code
+    if (!isValid) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    // Set admin session
+    req.session.adminId = admin.id;
+    
+    res.json({ 
+      message: "Login successful", 
+      admin: { 
+        id: admin.id, 
+        username: admin.username 
+      } 
+    });
   } catch (error) {
+    console.error("Login error:", error);
     res.status(400).json({ error: "Invalid input value" });
   }
 });
