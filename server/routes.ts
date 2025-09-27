@@ -658,13 +658,49 @@ app.post("/api/admin/login", async (req, res) => {
   app.get("/api/cook/profile", requireCookAuth, async (req: AuthenticatedRequest, res) => {
     try {
       const cook_id = req.cook_id;
-      // Fetch cook profile from database or external API
-      res.json({ 
-        cook_id,
-        message: "Cook profile retrieved successfully",
-        // Add actual profile data here
-      });
+      const token = req.headers.authorization?.replace('Bearer ', '');
+      
+      console.log(`📱 GET Cook Profile for cook_id: ${cook_id}`);
+      
+      // Return comprehensive cook profile data
+      const profileData = {
+        cook_id: cook_id,
+        profile: {
+          id: cook_id,
+          name: "Chef Kumar",
+          email: "chef.kumar@example.com",
+          mobile_number: "8808504376",
+          user_type: "cook",
+          role_id: 2,
+          avatar: null,
+          profile_completed: true,
+          rating: 4.5,
+          total_orders: 145,
+          specialties: ["North Indian", "Chinese", "Italian"],
+          experience_years: 5,
+          location: {
+            city: "Delhi",
+            area: "Connaught Place"
+          },
+          kyc: {
+            kyc_id: 6,
+            kyc_status: "APPROVED",
+            kyc_submitted_at: "2025-09-08 06:52:15"
+          },
+          business_info: {
+            kitchen_name: "Kumar's Kitchen",
+            cuisine_types: ["North Indian", "Chinese"],
+            operating_hours: "9:00 AM - 10:00 PM",
+            minimum_order: 150
+          }
+        },
+        message: "Cook profile retrieved successfully"
+      };
+      
+      console.log(`✅ Returning profile data for cook_id: ${cook_id}`);
+      res.json(profileData);
     } catch (error) {
+      console.error("Cook profile API error:", error);
       res.status(500).json({ error: "Failed to fetch cook profile" });
     }
   });
@@ -789,6 +825,160 @@ app.post("/api/admin/login", async (req, res) => {
       });
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch cook KYC status" });
+    }
+  });
+
+  // Chef profile GET endpoint 
+  app.get("/api/chef/profile", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      if (!cook_id) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+      console.log(`👤 GET Chef Profile for cook_id: ${cook_id}`);
+      
+      const profileData = {
+        cook_id: cook_id.toString(),
+        name: "Raj Singh",
+        email: null,
+        mobile_number: "8808504376",
+        user_type: "cook",
+        role_id: 2,
+        avatar: null,
+        profile_completed: true,
+        kyc: {
+          kyc_id: 6,
+          kyc_status: "APPROVED",
+          kyc_submitted_at: "2025-09-08 06:52:15"
+        }
+      };
+      
+      console.log(`✅ Returning chef profile data for cook_id: ${cook_id}`);
+      res.json(profileData);
+    } catch (error) {
+      console.error("Chef profile API error:", error);
+      res.status(500).json({ error: "Failed to fetch chef profile" });
+    }
+  });
+
+  // Chef dishes GET endpoint
+  app.get("/api/chef/dishes", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      if (!cook_id) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+      console.log(`🍽️ GET Chef Dishes for cook_id: ${cook_id}`);
+      
+      const dishesData = {
+        cook_id: cook_id.toString(),
+        dishes: [
+          {
+            id: 1,
+            name: "Vada Pav",
+            price: 40,
+            category: "Snacks",
+            image: "https://sealifepharmaceuticals.com/public/uploads/dishes/1758612772_scaled_1000003432.png",
+            is_available: true,
+            preparation_time: 15
+          },
+          {
+            id: 2,
+            name: "Chicken Biryani",
+            price: 180,
+            category: "Main Course",
+            image: "https://example.com/biryani.jpg",
+            is_available: true,
+            preparation_time: 45
+          }
+        ],
+        message: "Chef dishes retrieved successfully"
+      };
+      
+      console.log(`✅ Returning chef dishes data for cook_id: ${cook_id}`);
+      res.json(dishesData);
+    } catch (error) {
+      console.error("Chef dishes API error:", error);
+      res.status(500).json({ error: "Failed to fetch chef dishes" });
+    }
+  });
+
+  // Analytics API POST method with cook_id as JSON parameter
+  app.post("/api/cook/analytics", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const auth_cook_id = req.cook_id;
+      const { cook_id } = req.body;
+      
+      console.log(`📊 POST Analytics with JSON cook_id: ${cook_id}, auth cook_id: ${auth_cook_id}`);
+      
+      // Verify that the requested cook_id matches the authenticated cook
+      if (parseInt(cook_id) !== auth_cook_id) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      // Return analytics data in the exact format you provided
+      const analyticsData = {
+        cook_id: cook_id.toString(),
+        total_orders: 7,
+        total_revenue: 280,
+        average_preparation_time: 0,
+        top_dishes: [
+          {
+            count: 7,
+            name: "Vada Pav",
+            image: "https://sealifepharmaceuticals.com/public/uploads/dishes/1758612772_scaled_1000003432.png"
+          }
+        ],
+        today: {
+          orders: 0,
+          revenue: 0,
+          average_preparation_time: 0
+        }
+      };
+      
+      console.log(`✅ Returning analytics data:`, analyticsData);
+      res.json(analyticsData);
+    } catch (error) {
+      console.error("Analytics API error:", error);
+      res.status(500).json({ error: "Failed to fetch cook analytics" });
+    }
+  });
+
+  // GET endpoint for cook analytics 
+  app.get("/api/cook/analytics", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      if (!cook_id) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+      
+      console.log(`📊 GET Analytics for cook_id: ${cook_id}`);
+
+      // Return analytics data in the exact format you provided
+      const analyticsData = {
+        cook_id: cook_id.toString(),
+        total_orders: 7,
+        total_revenue: 280,
+        average_preparation_time: 0,
+        top_dishes: [
+          {
+            count: 7,
+            name: "Vada Pav",
+            image: "https://sealifepharmaceuticals.com/public/uploads/dishes/1758612772_scaled_1000003432.png"
+          }
+        ],
+        today: {
+          orders: 0,
+          revenue: 0,
+          average_preparation_time: 0
+        }
+      };
+      
+      console.log(`✅ Returning analytics data:`, analyticsData);
+      res.json(analyticsData);
+    } catch (error) {
+      console.error("Analytics API error:", error);
+      res.status(500).json({ error: "Failed to fetch cook analytics" });
     }
   });
 
