@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import Lottie from "lottie-react";
 import chefCooking from "@/assets/chef-cooking.png";
 import deliveryScooter from "@/assets/delivery-scooter.png";
 import chefFood from "@/assets/chef-food.png";
+import dancingChefAnimation from "@assets/dancing-chef.json";
 
 const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -51,6 +53,17 @@ const Hero = () => {
           {/* Left Content */}
           <div className="text-center lg:text-left space-y-6">
             <div className="space-y-4">
+              {/* Dancing Chef Animation */}
+              <div className="flex justify-center lg:justify-start mb-1">
+                <div className="w-12 h-12 lg:w-16 lg:h-16">
+                  <Lottie 
+                    animationData={dancingChefAnimation}
+                    loop={true}
+                    autoplay={true}
+                    style={{ width: '100%', height: '100%' }}
+                  />
+                </div>
+              </div>
               <h1 className="text-5xl lg:text-7xl font-black text-gray-900">
                 <span className="bg-gradient-to-r from-orange-500 to-amber-600 bg-clip-text text-transparent">
                   QOOKKAR
