@@ -113,6 +113,7 @@ app.post("/api/admin/login", async (req, res) => {
       const features = await storage.getActiveFeatures();
       res.json(features);
     } catch (error) {
+      console.error("Features error:", error);
       res.status(500).json({ error: "Failed to fetch features" });
     }
   });
@@ -122,6 +123,7 @@ app.post("/api/admin/login", async (req, res) => {
       const stats = await storage.getStats();
       res.json(stats || { restaurants: 0, cities: 0, users: 0, orders: 0 });
     } catch (error) {
+      console.error("Stats error:", error);
       res.status(500).json({ error: "Failed to fetch stats" });
     }
   });
@@ -134,6 +136,7 @@ app.post("/api/admin/login", async (req, res) => {
       const publishedPages = pages.filter((page) => page.isPublished);
       res.json(publishedPages);
     } catch (error) {
+      console.error("Footer pages error:", error);
       res.status(500).json({ error: "Failed to fetch footer pages" });
     }
   });

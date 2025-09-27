@@ -1,32 +1,15 @@
-import mysql from 'mysql2/promise';
-import { drizzle } from 'drizzle-orm/mysql2';
+import { drizzle } from 'drizzle-orm/neon-serverless';
+import { neon } from '@neondatabase/serverless';
 import * as schema from '@shared/schema';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Log database connection config for debugging
-console.log('Connecting to DB with config:');
-console.log({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USERNAME,
-  database: process.env.DB_DATABASE,
-  // Don't log password here
-});
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL environment variable is required");
+}
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT),
-  user: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-});
+// Create the Neon database connection
+const sql = neon(process.env.DATABASE_URL);
 
-export const db = drizzle(pool, {
-  schema,
-  mode: 'default',
-});
+export const db = drizzle(sql, { schema: schema });
