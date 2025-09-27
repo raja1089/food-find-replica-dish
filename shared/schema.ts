@@ -77,6 +77,79 @@ export const heroSection = pgTable("hero_section", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Chefs table - authenticated chef users
+export const chefs = pgTable("chefs", {
+  id: serial("id").primaryKey(),
+  phone: text("phone").notNull().unique(),
+  email: text("email"),
+  isActive: boolean("is_active").default(true),
+  isVerified: boolean("is_verified").default(false),
+  lastLogin: timestamp("last_login"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Chef profiles table - detailed chef information
+export const chefProfiles = pgTable("chef_profiles", {
+  id: serial("id").primaryKey(),
+  chefId: integer("chef_id").references(() => chefs.id).notNull(),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  kitchenName: text("kitchen_name"),
+  kitchenType: text("kitchen_type"), // home_kitchen, restaurant, cloud_kitchen
+  cuisineTypes: text("cuisine_types").array(),
+  address: text("address"),
+  city: text("city"),
+  state: text("state"),
+  pincode: text("pincode"),
+  fssaiLicense: text("fssai_license"),
+  gstNumber: text("gst_number"),
+  panNumber: text("pan_number"),
+  experience: text("experience"),
+  specialties: text("specialties").array(),
+  description: text("description"),
+  profileImage: text("profile_image"),
+  kitchenImages: text("kitchen_images").array(),
+  rating: decimal("rating", { precision: 2, scale: 1 }).default("0.0"),
+  totalOrders: integer("total_orders").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Chef dishes table
+export const chefDishes = pgTable("chef_dishes", {
+  id: serial("id").primaryKey(),
+  chefId: integer("chef_id").references(() => chefs.id).notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  discountPrice: decimal("discount_price", { precision: 10, scale: 2 }),
+  category: text("category").notNull(),
+  dishType: text("dish_type").notNull(), // veg, non-veg, vegan
+  mealType: text("meal_type").notNull(), // breakfast, lunch, dinner, snack
+  preparationTime: integer("preparation_time").notNull(), // in minutes
+  servingSize: integer("serving_size").default(1),
+  ingredients: text("ingredients").array(),
+  allergens: text("allergens").array(),
+  nutritionalInfo: text("nutritional_info"),
+  images: text("images").array(),
+  isAvailable: boolean("is_available").default(true),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// OTP table for chef authentication
+export const chefOtps = pgTable("chef_otps", {
+  id: serial("id").primaryKey(),
+  phone: text("phone").notNull(),
+  otp: text("otp").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  isUsed: boolean("is_used").default(false),
+  attempts: integer("attempts").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const cookRegistrations = pgTable("cook_registrations", {
   id: serial("id").primaryKey(),
   // Personal Information
@@ -123,6 +196,25 @@ export const restaurantsRelations = relations(restaurants, ({ one }) => ({
   city: one(cities, {
     fields: [restaurants.cityId],
     references: [cities.id],
+  }),
+}));
+
+export const chefsRelations = relations(chefs, ({ one, many }) => ({
+  profile: one(chefProfiles),
+  dishes: many(chefDishes),
+}));
+
+export const chefProfilesRelations = relations(chefProfiles, ({ one }) => ({
+  chef: one(chefs, {
+    fields: [chefProfiles.chefId],
+    references: [chefs.id],
+  }),
+}));
+
+export const chefDishesRelations = relations(chefDishes, ({ one }) => ({
+  chef: one(chefs, {
+    fields: [chefDishes.chefId],
+    references: [chefs.id],
   }),
 }));
 
@@ -201,6 +293,56 @@ export const insertCookRegistrationSchema = createInsertSchema(cookRegistrations
   description: true,
 });
 
+export const insertChefSchema = createInsertSchema(chefs).pick({
+  phone: true,
+  email: true,
+});
+
+export const insertChefProfileSchema = createInsertSchema(chefProfiles).pick({
+  chefId: true,
+  firstName: true,
+  lastName: true,
+  kitchenName: true,
+  kitchenType: true,
+  cuisineTypes: true,
+  address: true,
+  city: true,
+  state: true,
+  pincode: true,
+  fssaiLicense: true,
+  gstNumber: true,
+  panNumber: true,
+  experience: true,
+  specialties: true,
+  description: true,
+  profileImage: true,
+  kitchenImages: true,
+});
+
+export const insertChefDishSchema = createInsertSchema(chefDishes).pick({
+  chefId: true,
+  name: true,
+  description: true,
+  price: true,
+  discountPrice: true,
+  category: true,
+  dishType: true,
+  mealType: true,
+  preparationTime: true,
+  servingSize: true,
+  ingredients: true,
+  allergens: true,
+  nutritionalInfo: true,
+  images: true,
+  isAvailable: true,
+});
+
+export const insertChefOtpSchema = createInsertSchema(chefOtps).pick({
+  phone: true,
+  otp: true,
+  expiresAt: true,
+});
+
 // Types
 export type InsertAdmin = z.infer<typeof insertAdminSchema>;
 export type Admin = typeof admins.$inferSelect;
@@ -218,3 +360,13 @@ export type InsertHeroSection = z.infer<typeof insertHeroSectionSchema>;
 export type HeroSection = typeof heroSection.$inferSelect;
 export type InsertCookRegistration = z.infer<typeof insertCookRegistrationSchema>;
 export type CookRegistration = typeof cookRegistrations.$inferSelect;
+
+// Chef types
+export type InsertChef = z.infer<typeof insertChefSchema>;
+export type Chef = typeof chefs.$inferSelect;
+export type InsertChefProfile = z.infer<typeof insertChefProfileSchema>;
+export type ChefProfile = typeof chefProfiles.$inferSelect;
+export type InsertChefDish = z.infer<typeof insertChefDishSchema>;
+export type ChefDish = typeof chefDishes.$inferSelect;
+export type InsertChefOtp = z.infer<typeof insertChefOtpSchema>;
+export type ChefOtp = typeof chefOtps.$inferSelect;
