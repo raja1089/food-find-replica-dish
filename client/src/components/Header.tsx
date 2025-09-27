@@ -19,16 +19,27 @@ const Header = () => {
   const isActive = (path: string) => location === path;
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-xl z-50 border-b border-amber-100/50 shadow-lg">
-      <div className="container mx-auto px-6 max-w-7xl">
-        <div className="flex items-center justify-between h-24">
+    <header className="fixed top-0 left-0 right-0 bg-gradient-to-r from-white/95 via-white/90 to-white/95 backdrop-blur-2xl z-50 border-b border-gradient-to-r from-amber-200/30 via-orange-200/40 to-amber-200/30 shadow-2xl shadow-amber-500/10">
+      <div className="container mx-auto px-8 max-w-8xl">
+        <div className="flex items-center justify-between h-28">
           {/* Logo Only */}
           <Link href="/" className="flex items-center group">
-            <img
-              src="/logo.png"
-              alt="Qookkar Logo"
-              className="w-16 h-16 object-contain transform transition-all group-hover:scale-110 group-hover:rotate-6"
-            />
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-400/20 via-orange-500/20 to-red-400/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 scale-110"></div>
+              <img
+                src="/logo.png"
+                alt="Qookkar Logo"
+                className="relative w-20 h-20 object-contain transform transition-all duration-500 group-hover:scale-110 group-hover:rotate-6 drop-shadow-2xl"
+              />
+            </div>
+            <div className="ml-4 flex flex-col">
+              <span className="text-3xl font-black bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 bg-clip-text text-transparent tracking-tight group-hover:from-amber-500 group-hover:via-orange-500 group-hover:to-red-500 transition-all duration-300">
+                QOOKKAR
+              </span>
+              <span className="text-xs font-medium text-gray-500 uppercase tracking-widest -mt-1">
+                Premium Experience
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
@@ -53,10 +64,11 @@ const Header = () => {
 
             <Button
               size="lg"
-              className="bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold rounded-full px-8 py-3 hover:from-amber-600 hover:to-orange-700 transition-all hover:scale-105 hover:shadow-xl"
+              className="relative bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white font-black rounded-full px-10 py-4 hover:from-amber-400 hover:via-orange-400 hover:to-red-400 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-amber-500/30 border border-amber-400/20"
               onClick={() => (window.location.href = "/kitchen-registration")}
             >
-              Register Kitchen
+              <span className="relative z-10">Join Qookkar</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent rounded-full"></div>
             </Button>
           </div>
 

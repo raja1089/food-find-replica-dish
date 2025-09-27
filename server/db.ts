@@ -12,4 +12,4 @@ if (!process.env.DATABASE_URL) {
 // Create the Neon database connection
 const sql = neon(process.env.DATABASE_URL);
 
-export const db = drizzle(sql, { schema: schema });
+export const db = drizzle(sql, { schema });

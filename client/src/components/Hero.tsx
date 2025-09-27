@@ -2,16 +2,17 @@ import { Button } from "@/components/ui/button";
 
 const Hero = () => {
   const bgImage =
-    "/herobg.jpg";
+    "/attached_assets/stock_images/high_quality_animate_230e9571.jpg";
 
   return (
     <section className="relative w-full h-screen text-white flex flex-col justify-between overflow-hidden">
-      {/* Background image with dark overlay */}
+      {/* Background image with dark overlay and effects */}
       <div
-        className="absolute inset-0 bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-center transform scale-105 transition-transform duration-[5000ms] ease-out hover:scale-110"
         style={{ backgroundImage: `url(${bgImage})` }}
       >
-        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/70"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-amber-900/20 via-transparent to-orange-900/20"></div>
       </div>
 
       {/* Center Content */}
