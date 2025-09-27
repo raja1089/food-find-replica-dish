@@ -9,7 +9,7 @@ async function seed() {
     // Create default admin user
     const hashedPassword = await bcrypt.hash("admin123", 10);
     await db.insert(admins).values({
-      username: "admin",
+      username: "adminok",
       password: hashedPassword,
     }).onConflictDoNothing();
 

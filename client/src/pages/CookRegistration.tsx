@@ -87,12 +87,16 @@ export default function CookRegistration() {
     },
   });
 
-  // Send OTP mutation
   const sendOtpMutation = useMutation({
     mutationFn: async (phone: string) => {
-      // Simulate OTP sending - in real app, this would call your SMS service
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return { success: true };
+      const res = await fetch('https://mediumorchid-alpaca-934571.hostingersite.com/api/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mobile_number: phone }),
+      });
+
+      if (!res.ok) throw new Error('Failed to send OTP');
+      return await res.json();
     },
     onSuccess: () => {
       setOtpSent(true);
@@ -104,35 +108,49 @@ export default function CookRegistration() {
     },
     onError: () => {
       toast({
-        title: 'Failed to Send OTP',
-        description: 'There was an error sending the OTP. Please try again.',
+        title: 'OTP Failed',
+        description: 'Could not send OTP. Please check the number and try again.',
         variant: 'destructive',
       });
     },
   });
 
-  // Verify OTP mutation
   const verifyOtpMutation = useMutation({
     mutationFn: async (otp: string) => {
-      // Simulate OTP verification - in real app, this would verify with your backend
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      if (otp === '123456') { // Demo OTP
-        return { success: true };
+      const res = await fetch('https://mediumorchid-alpaca-934571.hostingersite.com/api/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mobile_number: verifiedPhone,
+          otp,
+          user_type: 'cook',
+        }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || 'Invalid OTP');
       }
-      throw new Error('Invalid OTP');
+
+      return await res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       setStep('registration');
       form.setValue('phone', verifiedPhone);
+
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user_id', data.user.user_id);
+      localStorage.setItem('user_type', data.user.user_type);
+
       toast({
         title: 'Phone Verified',
-        description: 'Your phone number has been verified successfully.',
+        description: 'You are now verified and logged in.',
       });
     },
-    onError: () => {
+    onError: (err: any) => {
       toast({
         title: 'Invalid OTP',
-        description: 'The OTP you entered is incorrect. Please try again.',
+        description: err.message || 'Please try again.',
         variant: 'destructive',
       });
     },
@@ -140,10 +158,18 @@ export default function CookRegistration() {
 
   const registerMutation = useMutation({
     mutationFn: async (data: CookRegistrationFormData) => {
-      await apiRequest('/api/cook-registration', {
+      const token = localStorage.getItem('token');
+      const userId = localStorage.getItem('user_id');
+      await apiRequest('https://mediumorchid-alpaca-934571.hostingersite.com/api/cook/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          ...data,
+          user_id: userId, // Add user_id from localStorage
+        }),
       });
     },
     onSuccess: () => {
@@ -292,7 +318,7 @@ export default function CookRegistration() {
               <p className="text-gray-600">
                 We've sent a 6-digit code to {verifiedPhone}. Please enter it below.
               </p>
-              <p className="text-sm text-blue-600">Demo: Use 123456 as OTP</p>
+            
             </CardHeader>
             <CardContent>
               <Form {...otpForm}>

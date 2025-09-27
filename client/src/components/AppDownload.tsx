@@ -1,123 +1,96 @@
-import { Smartphone, Download, ChefHat, User } from "lucide-react";
+import { ChefHat, Smartphone, Heart, ShieldCheck, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import appLogo from "@/assets/app-logo.png";
 
 const AppDownload = () => {
+  const features = [
+    {
+      title: "Healthy Meals",
+      icon: "🍲",
+    },
+    {
+      title: "Homemade Chefs",
+      icon: "👩‍🍳",
+    },
+    {
+      title: "Affordable Pricing",
+      icon: "💸",
+    },
+    {
+      title: "Clean & Hygienic",
+      icon: "🧼",
+    },
+    {
+      title: "Trusted Quality",
+      icon: "✅",
+    },
+    {
+      title: "Veg & Non-Veg",
+      icon: "🥗🍗",
+    },
+  ];
+
   return (
-    <section className="py-20 bg-gradient-primary">
-      <div className="container mx-auto px-4">
-        {/* Section Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-            Get Our Mobile Apps
-          </h2>
-          <p className="text-white/90 text-xl max-w-3xl mx-auto leading-relaxed">
-            Download our dedicated apps for the best homemade food experience
-          </p>
-        </div>
+    <section className="py-24 bg-white">
+      <div className="container mx-auto px-6 max-w-7xl text-center">
+        {/* Header */}
+        <h2 className="text-5xl font-extrabold text-gray-900 mb-4">
+          Pure Homemade Food, Delivered
+        </h2>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-16">
+          Discover delicious meals made by passionate home chefs — healthy, clean, affordable, and full of love.
+        </p>
 
-        {/* App Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-          {/* Customer App */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-white/20">
-            <div className="bg-white/20 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <User className="w-10 h-10 text-white" />
-            </div>
-            <h3 className="text-2xl font-bold text-white mb-4">Customer App</h3>
-            <p className="text-white/80 mb-6 text-lg">
-              Order authentic homemade meals from local home chefs in your area
-            </p>
-            <ul className="text-white/90 space-y-2 mb-8 text-left">
-              <li className="flex items-center">
-                <span className="w-2 h-2 bg-primary-glow rounded-full mr-3"></span>
-                Browse local home kitchens
-              </li>
-              <li className="flex items-center">
-                <span className="w-2 h-2 bg-primary-glow rounded-full mr-3"></span>
-                Real-time order tracking
-              </li>
-              <li className="flex items-center">
-                <span className="w-2 h-2 bg-primary-glow rounded-full mr-3"></span>
-                Multiple payment options
-              </li>
-              <li className="flex items-center">
-                <span className="w-2 h-2 bg-primary-glow rounded-full mr-3"></span>
-                Rate and review meals
-              </li>
-            </ul>
-            <div className="space-y-4">
-              <h4 className="text-white font-semibold">Download Customer App</h4>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <img 
-                  src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" 
-                  alt="Download Customer App on App Store"
-                  className="h-12 hover:scale-105 transition-smooth cursor-pointer"
+        {/* App and Features */}
+        <div className="grid md:grid-cols-2 gap-16 items-center">
+          {/* Mobile Image + App Buttons */}
+          <div className="space-y-8">
+            <img
+              src="https://t3.ftcdn.net/jpg/15/45/05/76/240_F_1545057684_NivmBOW8v9YWLB1awcWOQlhwhyuu7WjS.jpg"
+              alt="App Preview"
+              className="mx-auto w-102 sm:w-00 md:w-106"
+            />
+
+            <div className="flex justify-center gap-4 flex-wrap">
+              <a href="https://play.google.com/store" target="_blank" rel="noopener noreferrer">
+                <img
+                  src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
+                  alt="Get it on Google Play"
+                  className="h-14 hover:scale-105 transition-transform"
                 />
-                <img 
-                  src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" 
-                  alt="Get Customer App on Google Play"
-                  className="h-12 hover:scale-105 transition-smooth cursor-pointer"
+              </a>
+              <a href="https://www.apple.com/app-store/" target="_blank" rel="noopener noreferrer">
+                <img
+                  src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
+                  alt="Download on App Store"
+                  className="h-14 hover:scale-105 transition-transform"
                 />
-              </div>
+              </a>
             </div>
           </div>
 
-          {/* Cook App */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-white/20">
-            <div className="bg-white/20 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <ChefHat className="w-10 h-10 text-white" />
-            </div>
-            <h3 className="text-2xl font-bold text-white mb-4">Cook App</h3>
-            <p className="text-white/80 mb-6 text-lg">
-              Start your home kitchen business and reach customers in your neighborhood
-            </p>
-            <ul className="text-white/90 space-y-2 mb-8 text-left">
-              <li className="flex items-center">
-                <span className="w-2 h-2 bg-primary-glow rounded-full mr-3"></span>
-                Manage your kitchen profile
-              </li>
-              <li className="flex items-center">
-                <span className="w-2 h-2 bg-primary-glow rounded-full mr-3"></span>
-                Upload menu and prices
-              </li>
-              <li className="flex items-center">
-                <span className="w-2 h-2 bg-primary-glow rounded-full mr-3"></span>
-                Receive and manage orders
-              </li>
-              <li className="flex items-center">
-                <span className="w-2 h-2 bg-primary-glow rounded-full mr-3"></span>
-                Track earnings and analytics
-              </li>
-            </ul>
-            <div className="space-y-4">
-              <h4 className="text-white font-semibold">Download Cook App</h4>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <img 
-                  src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" 
-                  alt="Download Cook App on App Store"
-                  className="h-12 hover:scale-105 transition-smooth cursor-pointer"
-                />
-                <img 
-                  src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" 
-                  alt="Get Cook App on Google Play"
-                  className="h-12 hover:scale-105 transition-smooth cursor-pointer"
-                />
+          {/* Features */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                className="flex flex-col items-center bg-amber-50 rounded-xl px-4 py-6 shadow hover:shadow-md transition"
+              >
+                <div className="text-3xl mb-3">{feature.icon}</div>
+                <h4 className="text-base font-medium text-gray-800">{feature.title}</h4>
               </div>
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* Cook Registration CTA */}
-        <div className="text-center bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-          <h3 className="text-2xl font-bold text-white mb-4">
-            Ready to Start Your Home Kitchen Business?
+        {/* CTA */}
+        <div className="mt-20">
+          <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+            Ready to taste the love of home kitchens?
           </h3>
-          <p className="text-white/80 mb-6 text-lg">
-            Join our community of home chefs and start earning from your cooking passion
-          </p>
-          <Button 
-            className="bg-white text-primary hover:bg-white/90 font-semibold text-lg px-8 py-4 rounded-xl"
-            onClick={() => window.location.href = '/cook-registration'}
+          <Button
+            className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-lg px-8 py-3 rounded-full shadow-md hover:shadow-lg"
+            onClick={() => window.location.href = "/cook-registration"}
           >
             Register Your Kitchen
           </Button>

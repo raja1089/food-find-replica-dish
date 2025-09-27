@@ -86,7 +86,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-2 text-muted-foreground">
                 <Phone className="w-4 h-4" />
-                <span>+91 98765 43210</span>
+                <span>+91 8318868521</span>
               </div>
               <div className="flex items-center space-x-2 text-muted-foreground">
                 <Mail className="w-4 h-4" />
@@ -189,7 +189,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-border mt-8 pt-6 text-center">
           <p className="text-sm text-muted-foreground">
-            © 2024 HomemadeFood Ltd. All rights reserved.
+            © 2025 HomemadeFood Ltd. All rights reserved.
           </p>
         </div>
       </div>

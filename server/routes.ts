@@ -1,32 +1,37 @@
 import type { Express } from "express";
+import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { 
-  insertAdminSchema, 
-  insertCitySchema, 
-  insertRestaurantSchema, 
+import {
+  insertAdminSchema,
+  insertCitySchema,
+  insertRestaurantSchema,
   insertFeatureSchema,
   insertStatsSchema,
   insertFooterPageSchema,
   insertHeroSectionSchema,
-  insertCookRegistrationSchema
+  insertCookRegistrationSchema,
 } from "@shared/schema";
 import { mysqlCookStorage } from "./mysql-db";
 import bcrypt from "bcrypt";
 import session from "express-session";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Session middleware for admin authentication
-  app.use(session({
-    secret: process.env.SESSION_SECRET || 'fallback-secret-key',
-    resave: false,
-    saveUninitialized: false,
-    cookie: { 
-      secure: false, // Set to true in production with HTTPS
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }
-  }));
+  // Add this line to parse JSON request bodies
+  app.use(express.json());
 
+  // Session middleware for admin authentication
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET || "fallback-secret-key",
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        secure: false, // Set to true in production with HTTPS
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      },
+    }),
+  );
   // Middleware to check if admin is authenticated
   const requireAuth = (req: any, res: any, next: any) => {
     if (!req.session.adminId) {
@@ -36,28 +41,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   };
 
   // Admin Authentication Routes
-  app.post('/api/admin/login', async (req, res) => {
-    try {
-      const { username, password } = insertAdminSchema.parse(req.body);
-      
-      const admin = await storage.getAdminByUsername(username);
-      if (!admin) {
-        return res.status(401).json({ error: "Invalid credentials" });
-      }
+app.post("/api/admin/login", async (req, res) => {
+  try {
+    const { username, password } = insertAdminSchema.parse(req.body);
+    const admin = await storage.getAdminByUsername(username);
 
-      const isValid = await bcrypt.compare(password, admin.password);
-      if (!isValid) {
-        return res.status(401).json({ error: "Invalid credentials" });
-      }
-
-      req.session.adminId = admin.id;
-      res.json({ message: "Login successful", admin: { id: admin.id, username: admin.username } });
-    } catch (error) {
-      res.status(400).json({ error: "Invalid input" });
+    if (!admin) {
+      return res.status(401).json({ error: "wrong cred" });
     }
-  });
+    
+    // ✅ Add these two lines
+    console.log("Password from request:", password);
+    console.log("Password from database:", admin.password);
+    
+    const isValid = await bcrypt.compare(password, admin.password);
+    
+    // ... rest of your code
+  } catch (error) {
+    res.status(400).json({ error: "Invalid input value" });
+  }
+});
 
-  app.post('/api/admin/logout', (req, res) => {
+  app.post("/api/admin/logout", (req, res) => {
     req.session.destroy((err: any) => {
       if (err) {
         return res.status(500).json({ error: "Logout failed" });
@@ -66,9 +71,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  app.get('/api/admin/verify', requireAuth, async (req, res) => {
+  app.get("/api/admin/verify", requireAuth, async (req, res) => {
     try {
-      const admin = await storage.getAdminByUsername('admin'); // You'll need to get by ID
+      const admin = await storage.getAdminByUsername("admin"); // You'll need to get by ID
       res.json({ admin: { id: admin?.id, username: admin?.username } });
     } catch (error) {
       res.status(500).json({ error: "Failed to get admin info" });
@@ -76,7 +81,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Public API Routes (for frontend)
-  app.get('/api/cities', async (req, res) => {
+  app.get("/api/cities", async (req, res) => {
     try {
       const cities = await storage.getAllCities();
       res.json(cities);
@@ -85,7 +90,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/cities/popular', async (req, res) => {
+  app.get("/api/cities/popular", async (req, res) => {
     try {
       const cities = await storage.getPopularCities();
       res.json(cities);
@@ -94,7 +99,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/restaurants', async (req, res) => {
+  app.get("/api/restaurants", async (req, res) => {
     try {
       const restaurants = await storage.getAllRestaurants();
       res.json(restaurants);
@@ -103,7 +108,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/features', async (req, res) => {
+  app.get("/api/features", async (req, res) => {
     try {
       const features = await storage.getActiveFeatures();
       res.json(features);
@@ -112,7 +117,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/stats', async (req, res) => {
+  app.get("/api/stats", async (req, res) => {
     try {
       const stats = await storage.getStats();
       res.json(stats || { restaurants: 0, cities: 0, users: 0, orders: 0 });
@@ -122,11 +127,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Public footer pages endpoint
-  app.get('/api/footer-pages', async (req, res) => {
+  app.get("/api/footer-pages", async (req, res) => {
     try {
       const pages = await storage.getAllFooterPages();
       // Only return published pages for public endpoint
-      const publishedPages = pages.filter(page => page.isPublished);
+      const publishedPages = pages.filter((page) => page.isPublished);
       res.json(publishedPages);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch footer pages" });
@@ -134,15 +139,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get specific footer page by slug
-  app.get('/api/footer-pages/:slug', async (req, res) => {
+  app.get("/api/footer-pages/:slug", async (req, res) => {
     try {
       const { slug } = req.params;
       const page = await storage.getFooterPageBySlug(slug);
-      
+
       if (!page || !page.isPublished) {
         return res.status(404).json({ error: "Page not found" });
       }
-      
+
       res.json(page);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch page" });
@@ -151,7 +156,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Admin API Routes (protected)
   // Cities management
-  app.get('/api/admin/cities', requireAuth, async (req, res) => {
+  app.get("/api/admin/cities", requireAuth, async (req, res) => {
     try {
       const cities = await storage.getAllCities();
       res.json(cities);
@@ -160,7 +165,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/admin/cities', requireAuth, async (req, res) => {
+  app.post("/api/admin/cities", requireAuth, async (req, res) => {
     try {
       const cityData = insertCitySchema.parse(req.body);
       const city = await storage.createCity(cityData);
@@ -170,7 +175,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/cities/:id', requireAuth, async (req, res) => {
+  app.put("/api/admin/cities/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const cityData = insertCitySchema.partial().parse(req.body);
@@ -181,7 +186,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/admin/cities/:id', requireAuth, async (req, res) => {
+  app.delete("/api/admin/cities/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       await storage.deleteCity(id);
@@ -192,7 +197,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Restaurants management
-  app.get('/api/admin/restaurants', requireAuth, async (req, res) => {
+  app.get("/api/admin/restaurants", requireAuth, async (req, res) => {
     try {
       const restaurants = await storage.getAllRestaurants();
       res.json(restaurants);
@@ -201,7 +206,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/admin/restaurants', requireAuth, async (req, res) => {
+  app.post("/api/admin/restaurants", requireAuth, async (req, res) => {
     try {
       const restaurantData = insertRestaurantSchema.parse(req.body);
       const restaurant = await storage.createRestaurant(restaurantData);
@@ -211,7 +216,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/restaurants/:id', requireAuth, async (req, res) => {
+  app.put("/api/admin/restaurants/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const restaurantData = insertRestaurantSchema.partial().parse(req.body);
@@ -222,7 +227,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/admin/restaurants/:id', requireAuth, async (req, res) => {
+  app.delete("/api/admin/restaurants/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       await storage.deleteRestaurant(id);
@@ -233,7 +238,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Features management
-  app.get('/api/admin/features', requireAuth, async (req, res) => {
+  app.get("/api/admin/features", requireAuth, async (req, res) => {
     try {
       const features = await storage.getAllFeatures();
       res.json(features);
@@ -242,7 +247,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/admin/features', requireAuth, async (req, res) => {
+  app.post("/api/admin/features", requireAuth, async (req, res) => {
     try {
       const featureData = insertFeatureSchema.parse(req.body);
       const feature = await storage.createFeature(featureData);
@@ -252,7 +257,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/features/:id', requireAuth, async (req, res) => {
+  app.put("/api/admin/features/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const featureData = insertFeatureSchema.partial().parse(req.body);
@@ -263,7 +268,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/admin/features/:id', requireAuth, async (req, res) => {
+  app.delete("/api/admin/features/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       await storage.deleteFeature(id);
@@ -274,7 +279,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Stats management
-  app.put('/api/admin/stats', requireAuth, async (req, res) => {
+  app.put("/api/admin/stats", requireAuth, async (req, res) => {
     try {
       const statsData = insertStatsSchema.parse(req.body);
       const stats = await storage.updateStats(statsData);
@@ -285,7 +290,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Footer pages management
-  app.get('/api/admin/footer-pages', requireAuth, async (req, res) => {
+  app.get("/api/admin/footer-pages", requireAuth, async (req, res) => {
     try {
       const pages = await storage.getAllFooterPages();
       res.json(pages);
@@ -294,7 +299,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/admin/footer-pages', requireAuth, async (req, res) => {
+  app.post("/api/admin/footer-pages", requireAuth, async (req, res) => {
     try {
       const pageData = insertFooterPageSchema.parse(req.body);
       const page = await storage.createFooterPage(pageData);
@@ -304,7 +309,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/footer-pages/:id', requireAuth, async (req, res) => {
+  app.put("/api/admin/footer-pages/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const pageData = insertFooterPageSchema.partial().parse(req.body);
@@ -315,7 +320,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/admin/footer-pages/:id', requireAuth, async (req, res) => {
+  app.delete("/api/admin/footer-pages/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       await storage.deleteFooterPage(id);
@@ -326,7 +331,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Hero section management
-  app.get('/api/admin/hero', requireAuth, async (req, res) => {
+  app.get("/api/admin/hero", requireAuth, async (req, res) => {
     try {
       const hero = await storage.getHeroSection();
       res.json(hero);
@@ -335,7 +340,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/hero', requireAuth, async (req, res) => {
+  app.put("/api/admin/hero", requireAuth, async (req, res) => {
     try {
       const heroData = insertHeroSectionSchema.parse(req.body);
       const hero = await storage.updateHeroSection(heroData);
@@ -346,10 +351,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Cook registration routes (public) - Using MySQL with PostgreSQL fallback
-  app.post('/api/cook-registration', async (req, res) => {
+  app.post("/api/kitchen-registration", async (req, res) => {
     try {
       const registrationData = insertCookRegistrationSchema.parse(req.body);
-      
+
       // Try MySQL first
       try {
         const mysqlData = {
@@ -370,96 +375,117 @@ export async function registerRoutes(app: Express): Promise<Server> {
           experience: registrationData.experience,
           specialties: registrationData.specialties || [],
           description: registrationData.description,
-          status: 'pending',
+          status: "pending",
           latitude: undefined,
-          longitude: undefined
+          longitude: undefined,
         };
-        
-        const registration = await mysqlCookStorage.createCookRegistration(mysqlData);
-        res.json({ message: "Registration submitted successfully", registration });
+
+        const registration =
+          await mysqlCookStorage.createCookRegistration(mysqlData);
+        res.json({
+          message: "Registration submitted successfully",
+          registration,
+        });
       } catch (mysqlError) {
-        console.log('MySQL unavailable, using PostgreSQL fallback');
+        console.log("MySQL unavailable, using PostgreSQL fallback");
         // Fallback to PostgreSQL
-        const registration = await storage.createCookRegistration(registrationData);
-        res.json({ message: "Registration submitted successfully", registration });
+        const registration =
+          await storage.createCookRegistration(registrationData);
+        res.json({
+          message: "Registration submitted successfully",
+          registration,
+        });
       }
     } catch (error) {
-      console.error('Cook registration error:', error);
+      console.error("Cook registration error:", error);
       res.status(500).json({ error: "Registration failed. Please try again." });
     }
   });
 
   // Cook registration admin routes - Using MySQL with PostgreSQL fallback
-  app.get('/api/admin/cook-registrations', requireAuth, async (req, res) => {
+  app.get("/api/admin/cook-registrations", requireAuth, async (req, res) => {
     try {
       // Try MySQL first
       try {
         const registrations = await mysqlCookStorage.getAllCookRegistrations();
         res.json(registrations);
       } catch (mysqlError) {
-        console.log('MySQL unavailable, using PostgreSQL fallback');
+        console.log("MySQL unavailable, using PostgreSQL fallback");
         // Fallback to PostgreSQL
         const registrations = await storage.getAllCookRegistrations();
         res.json(registrations);
       }
     } catch (error) {
-      console.error('Error fetching cook registrations:', error);
+      console.error("Error fetching cook registrations:", error);
       res.status(500).json({ error: "Failed to fetch cook registrations" });
     }
   });
 
-  app.get('/api/admin/cook-registrations/:id', requireAuth, async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      // Try MySQL first
+  app.get(
+    "/api/admin/cook-registrations/:id",
+    requireAuth,
+    async (req, res) => {
       try {
-        const registration = await mysqlCookStorage.getCookRegistrationById(id);
-        if (!registration) {
-          return res.status(404).json({ error: "Registration not found" });
+        const id = parseInt(req.params.id);
+        // Try MySQL first
+        try {
+          const registration =
+            await mysqlCookStorage.getCookRegistrationById(id);
+          if (!registration) {
+            return res.status(404).json({ error: "Registration not found" });
+          }
+          res.json(registration);
+        } catch (mysqlError) {
+          console.log("MySQL unavailable, using PostgreSQL fallback");
+          // Fallback to PostgreSQL
+          const registration = await storage.getCookRegistrationById(id);
+          if (!registration) {
+            return res.status(404).json({ error: "Registration not found" });
+          }
+          res.json(registration);
         }
-        res.json(registration);
-      } catch (mysqlError) {
-        console.log('MySQL unavailable, using PostgreSQL fallback');
-        // Fallback to PostgreSQL
-        const registration = await storage.getCookRegistrationById(id);
-        if (!registration) {
-          return res.status(404).json({ error: "Registration not found" });
-        }
-        res.json(registration);
+      } catch (error) {
+        console.error("Error fetching cook registration:", error);
+        res.status(500).json({ error: "Failed to fetch registration" });
       }
-    } catch (error) {
-      console.error('Error fetching cook registration:', error);
-      res.status(500).json({ error: "Failed to fetch registration" });
-    }
-  });
+    },
+  );
 
-  app.put('/api/admin/cook-registrations/:id/status', requireAuth, async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const { status } = req.body;
-      
-      if (!['pending', 'approved', 'rejected'].includes(status)) {
-        return res.status(400).json({ error: "Invalid status" });
-      }
-      
-      // Try MySQL first
+  app.put(
+    "/api/admin/cook-registrations/:id/status",
+    requireAuth,
+    async (req, res) => {
       try {
-        const registration = await mysqlCookStorage.updateCookRegistrationStatus(id, status);
-        if (!registration) {
-          return res.status(404).json({ error: "Registration not found" });
+        const id = parseInt(req.params.id);
+        const { status } = req.body;
+
+        if (!["pending", "approved", "rejected"].includes(status)) {
+          return res.status(400).json({ error: "Invalid status" });
         }
-        res.json(registration);
-      } catch (mysqlError) {
-        console.log('MySQL unavailable, using PostgreSQL fallback');
-        // Fallback to PostgreSQL
-        const registration = await storage.updateCookRegistrationStatus(id, status);
-        res.json(registration);
+
+        // Try MySQL first
+        try {
+          const registration =
+            await mysqlCookStorage.updateCookRegistrationStatus(id, status);
+          if (!registration) {
+            return res.status(404).json({ error: "Registration not found" });
+          }
+          res.json(registration);
+        } catch (mysqlError) {
+          console.log("MySQL unavailable, using PostgreSQL fallback");
+          // Fallback to PostgreSQL
+          const registration = await storage.updateCookRegistrationStatus(
+            id,
+            status,
+          );
+          res.json(registration);
+        }
+      } catch (error) {
+        console.error("Error updating cook registration status:", error);
+        res.status(400).json({ error: "Failed to update registration status" });
       }
-    } catch (error) {
-      console.error('Error updating cook registration status:', error);
-      res.status(400).json({ error: "Failed to update registration status" });
-    }
-  });
+    },
+  );
 
   const httpServer = createServer(app);
   return httpServer;
