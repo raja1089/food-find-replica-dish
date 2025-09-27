@@ -77,6 +77,37 @@ export const heroSection = pgTable("hero_section", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Footer settings table for complete dynamic footer management
+export const footerSettings = pgTable("footer_settings", {
+  id: serial("id").primaryKey(),
+  // Company Info
+  companyName: text("company_name").notNull().default("Qookkar"),
+  companyDescription: text("company_description").notNull().default("Qookkar connects food lovers with premium homemade meals from expert home chefs. Fresh, authentic, and gourmet food delivered with care."),
+  companyLogo: text("company_logo"),
+  
+  // Contact Information
+  address: text("address").default("Pan India Service"),
+  phone: text("phone").default("+91 8318868521"),
+  email: text("email").default("info@qookkar.com"),
+  
+  // Social Media Links (JSON format)
+  socialLinks: text("social_links"),  // JSON: [{name: "Facebook", url: "...", icon: "facebook"}]
+  
+  // App Store Links
+  appStoreUrl: text("app_store_url"),
+  playStoreUrl: text("play_store_url"),
+  
+  // Footer Bottom
+  copyrightText: text("copyright_text").default("© 2025 HomemadeFood Ltd. All rights reserved."),
+  
+  // Settings
+  showSocialLinks: boolean("show_social_links").default(true),
+  showAppLinks: boolean("show_app_links").default(true),
+  showContactInfo: boolean("show_contact_info").default(true),
+  
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Chefs table - authenticated chef users
 export const chefs = pgTable("chefs", {
   id: serial("id").primaryKey(),
@@ -273,6 +304,22 @@ export const insertHeroSectionSchema = createInsertSchema(heroSection).pick({
   ctaLink: true,
 });
 
+export const insertFooterSettingsSchema = createInsertSchema(footerSettings).pick({
+  companyName: true,
+  companyDescription: true,
+  companyLogo: true,
+  address: true,
+  phone: true,
+  email: true,
+  socialLinks: true,
+  appStoreUrl: true,
+  playStoreUrl: true,
+  copyrightText: true,
+  showSocialLinks: true,
+  showAppLinks: true,
+  showContactInfo: true,
+});
+
 export const insertCookRegistrationSchema = createInsertSchema(cookRegistrations).pick({
   firstName: true,
   lastName: true,
@@ -358,6 +405,8 @@ export type InsertFooterPage = z.infer<typeof insertFooterPageSchema>;
 export type FooterPage = typeof footerPages.$inferSelect;
 export type InsertHeroSection = z.infer<typeof insertHeroSectionSchema>;
 export type HeroSection = typeof heroSection.$inferSelect;
+export type InsertFooterSettings = z.infer<typeof insertFooterSettingsSchema>;
+export type FooterSettings = typeof footerSettings.$inferSelect;
 export type InsertCookRegistration = z.infer<typeof insertCookRegistrationSchema>;
 export type CookRegistration = typeof cookRegistrations.$inferSelect;
 

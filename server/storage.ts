@@ -6,6 +6,7 @@ import {
   features, 
   stats,
   footerPages,
+  footerSettings,
   heroSection,
   cookRegistrations,
   chefs,
@@ -24,6 +25,8 @@ import {
   type InsertStats,
   type FooterPage,
   type InsertFooterPage,
+  type FooterSettings,
+  type InsertFooterSettings,
   type HeroSection,
   type InsertHeroSection,
   type CookRegistration,
@@ -84,6 +87,10 @@ export interface IStorage {
   // Hero section operations
   getHeroSection(): Promise<HeroSection | undefined>;
   updateHeroSection(hero: InsertHeroSection): Promise<HeroSection>;
+  
+  // Footer settings operations
+  getFooterSettings(): Promise<FooterSettings | undefined>;
+  updateFooterSettings(settings: InsertFooterSettings): Promise<FooterSettings>;
   
   // Cook registration operations
   createCookRegistration(registration: InsertCookRegistration): Promise<CookRegistration>;
@@ -262,6 +269,27 @@ export class DatabaseStorage implements IStorage {
     } else {
       const [newHero] = await db.insert(heroSection).values(hero).returning();
       return newHero;
+    }
+  }
+
+  // Footer settings operations
+  async getFooterSettings(): Promise<FooterSettings | undefined> {
+    const [settings] = await db.select().from(footerSettings).limit(1);
+    return settings;
+  }
+
+  async updateFooterSettings(settings: InsertFooterSettings): Promise<FooterSettings> {
+    const existingSettings = await this.getFooterSettings();
+    
+    if (existingSettings) {
+      const [updatedSettings] = await db.update(footerSettings)
+        .set({ ...settings, updatedAt: new Date() })
+        .where(eq(footerSettings.id, existingSettings.id))
+        .returning();
+      return updatedSettings;
+    } else {
+      const [newSettings] = await db.insert(footerSettings).values(settings).returning();
+      return newSettings;
     }
   }
 
