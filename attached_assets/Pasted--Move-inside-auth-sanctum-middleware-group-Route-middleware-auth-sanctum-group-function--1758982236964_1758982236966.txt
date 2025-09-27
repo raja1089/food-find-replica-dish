@@ -1,0 +1,81 @@
+// ✅ Move inside auth:sanctum middleware group
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+  
+    Route::get('/me', function (Request $r) {
+        return response()->json(['success' => true, 'user' => $r->user()]);
+    });
+// Linking (requires auth)
+Route::post('/link-accounts', [AuthController::class, 'linkAccounts']);
+  
+Route::post('/orders', [OrderController::class, 'store']);
+
+Route::post('/cook/update-location', [CookController::class, 'updateLocation']);
+Route::post('/add-dishes', [DishController::class, 'store']);
+Route::get('/dishes', [DishController::class, 'index']);
+Route::put('/update-dish/{id}', [DishController::class, 'update']);
+Route::post('/dishes/{id}/photo', [DishController::class, 'updatePhoto']);
+Route::delete('/dishes/{id}', [DishController::class, 'destroy']);
+Route::get('/cook/dishes/{dishId}', [DishController::class, 'getDish']);
+Route::patch('/dishes/{id}/availability', [DishController::class, 'updateAvailability']);
+  Route::get('/cook/kitchen-types', [KitchenTypeController::class, 'index']);
+  Route::get('/cook/rewards', [CookRewardController::class, 'index']);
+    Route::post('/cook/rewards/{id}/reveal', [CookRewardController::class, 'reveal']);
+    // Redeem (mark as redeemed)
+    Route::post('/cook/rewards/{id}/redeem', [CookRewardController::class, 'redeem']);
+  
+
+Route::post('/cooks/update-profile', [CookController::class, 'updateProfile']);
+Route::post('/cooks/upload-image', [CookController::class, 'uploadImage']);
+Route::post('/cook/upload-kitchen-pics', [CookController::class, 'uploadKitchenPics']);  
+ 
+Route::get('/orders/{id}', [OrderController::class, 'show']);
+Route::get('/orders/user/{userId}', [OrderController::class, 'userOrders']);
+Route::post('/orders/{id}/status', [OrderController::class, 'updateStatus']);
+
+//Customer
+
+Route::post('/customer/update-location', [CustomerController::class, 'updateLocation']);
+Route::get('/my-orders', [OrderController::class, 'myOrders']);
+Route::get('/categories/{id}/dishes', [DishController::class, 'getByCategory']);
+Route::get('/search', [SearchController::class, 'search']);
+Route::get('/dish-types', [DishTypeController::class, 'index']);
+Route::get('/dishes/by-dish-type/{id}', [DishController::class, 'getByDishType']);
+Route::post('/delivery/update-location', [DeliveryLocationController::class, 'updateLocation']);
+Route::get('/delivery/location/{delivery_boy_id}', [DeliveryLocationController::class, 'getLocation']);
+Route::get('/orders/tracking/{id}', [OrderTrackingController::class, 'show']);
+Route::get('/tracking/orders/{id}', [OrderController::class, 'trackOrder']);
+
+
+//cooks login
+
+Route::post('/cook/register', [CookController::class, 'registerCook'])->name('cook.register');
+Route::get('/cook/orders/{cookId}', [CookOrderController::class, 'getCookOrders']);
+Route::post('/orders/{id}/status', [OrderController::class, 'updateStatus']);
+Route::post('/cook/analytics/{cook_id}', [CookAnalyticsController::class, 'index']);
+Route::get('/cook/profile', [CookController::class, 'getProfile']);
+  
+Route::get('/cook/cuisine', [CookController::class, 'getCookCuisine']);
+Route::get('/cook/subregions/{cuisineId}', [CookController::class, 'getSubregions']);
+
+Route::get('/dish-types', [DishMetaController::class, 'getDishTypes']);
+Route::get('/meal-types', [DishMetaController::class, 'getMealTypes']);
+Route::get('/subregion-tags/{cuisine_id}', [DishMetaController::class, 'getSubregionTags']);
+Route::post('/ready-made-items', [ReadyMadeItemController::class, 'store']);
+    Route::put('ready-made-items/{id}', [ReadyMadeItemController::class, 'update']);
+Route::delete('/ready-made-items/{id}', [ReadyMadeItemController::class, 'destroy']);
+Route::post('/ready-made-items/{item}/variants', [ReadyMadeItemController::class, 'storeVariant']);
+Route::get('/item-types', [ReadyMadeItemController::class, 'indexItemtype']);
+Route::get('/items', [ReadyMadeItemController::class, 'items']);         
+Route::get('/items/{itemId}/variants', [ReadyMadeItemController::class, 'variants']); 
+Route::get('/itemsByType', [ReadyMadeItemController::class, 'itemsByItemType']); 
+  
+    Route::get('/items/similar', [ReadyMadeItemController::class, 'similar']);
+
+    Route::get('/variants/{variantId}/offers', [VariantsController::class, 'offers']);
+
+    Route::get('/reviews', [ReviewsController::class, 'index']);
+
+    Route::get('/pincode/check', [DeliveryController::class, 'check']);
