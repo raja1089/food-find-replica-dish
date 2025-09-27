@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { db } from "./db";
-import { admins, cities, restaurants, features, stats, footerPages } from "@shared/schema";
+import { admins, cities, restaurants, features, stats, footerPages, heroSection } from "@shared/schema";
 
 async function seed() {
   try {
@@ -233,6 +233,17 @@ async function seed() {
 
     await db.insert(footerPages).values(footerPagesData).onConflictDoNothing();
 
+    // Create hero section data  
+    const heroSectionData = {
+      title: "Partner with QOOKKAR",
+      subtitle: "Join thousands of home chefs earning with us. Turn your cooking passion into profit with our homemade food delivery platform.",
+      backgroundImage: "https://images.unsplash.com/photo-1556909114-b1e4a2b238a3?w=1200&h=800&fit=crop&auto=format",
+      ctaText: "Become a Chef",
+      ctaLink: "/kitchen-registration",
+    };
+
+    await db.insert(heroSection).values(heroSectionData).onConflictDoNothing();
+
     console.log("✅ Database seeded successfully!");
     console.log("🔑 Admin credentials: username=admin, password=admin123");
 
@@ -241,6 +252,5 @@ async function seed() {
   }
 }
 
-if (import.meta.main) {
-  seed();
-}
+// Run seed if this file is executed directly
+seed();
