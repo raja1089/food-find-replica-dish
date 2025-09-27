@@ -1,0 +1,141 @@
+Route::post('/orders', [OrderController::class, 'store']);
+
+Route::post('/cook/update-location', [CookController::class, 'updateLocation']);
+Route::post('/add-dishes', [DishController::class, 'store']);
+Route::get('/dishes', [DishController::class, 'index']);
+Route::put('/update-dish/{id}', [DishController::class, 'update']);
+Route::post('/dishes/{id}/photo', [DishController::class, 'updatePhoto']);
+Route::delete('/dishes/{id}', [DishController::class, 'destroy']);
+Route::get('/cook/dishes/{dishId}', [DishController::class, 'getDish']);
+Route::patch('/dishes/{id}/availability', [DishController::class, 'updateAvailability']);
+  Route::get('/cook/kitchen-types', [KitchenTypeController::class, 'index']);
+  Route::get('/cook/rewards', [CookRewardController::class, 'index']);
+    Route::post('/cook/rewards/{id}/reveal', [CookRewardController::class, 'reveal']);
+    // Redeem (mark as redeemed)
+    Route::post('/cook/rewards/{id}/redeem', [CookRewardController::class, 'redeem']);
+  
+
+Route::post('/cooks/update-profile', [CookController::class, 'updateProfile']);
+Route::post('/cooks/upload-image', [CookController::class, 'uploadImage']);
+Route::post('/cook/upload-kitchen-pics', [CookController::class, 'uploadKitchenPics']);  
+ 
+Route::get('/orders/{id}', [OrderController::class, 'show']);
+Route::get('/orders/user/{userId}', [OrderController::class, 'userOrders']);
+Route::post('/orders/{id}/status', [OrderController::class, 'updateStatus']);
+
+//Customer
+
+Route::post('/customer/update-location', [CustomerController::class, 'updateLocation']);
+Route::get('/my-orders', [OrderController::class, 'myOrders']);
+Route::get('/categories/{id}/dishes', [DishController::class, 'getByCategory']);
+Route::get('/search', [SearchController::class, 'search']);
+Route::get('/dish-types', [DishTypeController::class, 'index']);
+Route::get('/dishes/by-dish-type/{id}', [DishController::class, 'getByDishType']);
+Route::post('/delivery/update-location', [DeliveryLocationController::class, 'updateLocation']);
+Route::get('/delivery/location/{delivery_boy_id}', [DeliveryLocationController::class, 'getLocation']);
+Route::get('/orders/tracking/{id}', [OrderTrackingController::class, 'show']);
+Route::get('/tracking/orders/{id}', [OrderController::class, 'trackOrder']);
+
+
+//cooks login
+
+Route::post('/cook/register', [CookController::class, 'registerCook'])->name('cook.register');
+Route::get('/cook/orders/{cookId}', [CookOrderController::class, 'getCookOrders']);
+Route::post('/orders/{id}/status', [OrderController::class, 'updateStatus']);
+Route::post('/cook/analytics/{cook_id}', [CookAnalyticsController::class, 'index']);
+Route::get('/cook/profile', [CookController::class, 'getProfile']);
+  
+Route::get('/cook/cuisine', [CookController::class, 'getCookCuisine']);
+Route::get('/cook/subregions/{cuisineId}', [CookController::class, 'getSubregions']);
+
+Route::get('/dish-types', [DishMetaController::class, 'getDishTypes']);
+Route::get('/meal-types', [DishMetaController::class, 'getMealTypes']);
+Route::get('/subregion-tags/{cuisine_id}', [DishMetaController::class, 'getSubregionTags']);
+Route::post('/ready-made-items', [ReadyMadeItemController::class, 'store']);
+    Route::put('ready-made-items/{id}', [ReadyMadeItemController::class, 'update']);
+Route::delete('/ready-made-items/{id}', [ReadyMadeItemController::class, 'destroy']);
+Route::post('/ready-made-items/{item}/variants', [ReadyMadeItemController::class, 'storeVariant']);
+Route::get('/item-types', [ReadyMadeItemController::class, 'indexItemtype']);
+Route::get('/items', [ReadyMadeItemController::class, 'items']);         
+Route::get('/items/{itemId}/variants', [ReadyMadeItemController::class, 'variants']); 
+Route::get('/itemsByType', [ReadyMadeItemController::class, 'itemsByItemType']); 
+  
+    Route::get('/items/similar', [ReadyMadeItemController::class, 'similar']);
+
+    Route::get('/variants/{variantId}/offers', [VariantsController::class, 'offers']);
+
+    Route::get('/reviews', [ReviewsController::class, 'index']);
+
+    Route::get('/pincode/check', [DeliveryController::class, 'check']);
+  
+// Delivery boy logged 
+
+
+
+Route::get('/delivery/orders/available', [DeliveryOrderController::class, 'available']);
+Route::post('/delivery/orders/{id}/accept', [DeliveryOrderController::class, 'acceptOrder']);
+Route::post('/delivery/orders/{id}/cancel', [DeliveryOrderController::class, 'cancel']);
+
+//Delivery Boy location Update
+Route::post('/orders/{id}/location', [OrderController::class, 'updateDeliveryLocation']);
+
+
+//delivery boy
+
+//cook
+Route::get('/dishes', [DishController::class, 'index']);
+Route::get('/cooks', [CookController::class, 'index']);
+Route::post('/orders', [OrderController::class, 'store']);
+Route::get('/orders', [OrderController::class, 'index']);
+Route::get('/orders/{id}', [OrderController::class, 'show']);
+Route::post('/orders/{id}/cancel', [OrderController::class, 'cancel']);
+Route::post('/payments/initiate', [PaymentController::class, 'initiate']);
+Route::post('/payments/confirm', [PaymentController::class, 'confirm']);
+});
+
+
+// CMS
+
+Route::get('/sliders', [SliderController::class, 'index']);
+Route::get('/sliders/{id}', [SliderController::class, 'show']);
+Route::get('/top-header', [TopHeaderController::class, 'getHeader']);
+
+
+
+
+
+
+
+
+
+//Cook Coupon CRUD
+Route::post('/coupons/create', [CouponController::class, 'store']);        // Create coupon
+Route::put('/coupons/{id}/update', [CouponController::class, 'update']);   // Update coupon
+Route::get('/cook/coupons', [CouponController::class, 'index']);           // List coupons (pass cook_id as query param)
+Route::get('/coupons/{id}/get', [CouponController::class, 'show']);        // Get single coupon
+Route::delete('/coupons/{id}/delete', [CouponController::class, 'destroy']); // Delete coupon
+Route::patch('/{id}/toggle/coupon', [CouponController::class, 'toggleStatus']);
+
+  
+
+//
+
+//cook kyc
+//Route::get('/cook/{cook_id}/kyc-status', [CookKycController::class, 'getCookKycStatus']);
+
+// Route::post('/cook/kyc', [CookKycController::class, 'store']);       // Cook submits KYC
+   // Route::get('/cook/{cook_id}/kyc', [CookKycController::class, 'show']); // Get cook KYRoute::put('/cook/kyc/{id}', [CookKycController::class, 'update']);
+//   Route::patch('/cook/kyc/{id}/status', [CookKycController::class, 'updateStatus']); // Admin updates status  
+
+    Route::get('/cook/kyc', [CookKycController::class, 'showCurrent']);
+    Route::post('/cook/kyc', [CookKycController::class, 'store']);
+    Route::patch('/cook/kyc/{id}', [CookKycController::class, 'update']);
+    Route::delete('/cook/kyc/document/{id}', [CookKycController::class, 'deleteDocument']);
+    Route::get('/cook/kyc/status/{cook_id?}', [CookKycController::class, 'status']);
+
+
+// 
+
+// ready made cook api
+
+   Route::post('items/{item}/photo', [ReadyMadeItemController::class, 'updatePhoto']);
