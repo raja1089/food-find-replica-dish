@@ -14,6 +14,10 @@ run = ["npm", "run", "start"]
 localPort = 5000
 externalPort = 80
 
+[[ports]]
+localPort = 46049
+externalPort = 3000
+
 [workflows]
 runButton = "Project"
 
@@ -40,3 +44,4 @@ outputType = "webview"
 
 [agent]
 expertMode = true
+integrations = ["javascript_google_analytics:1.0.0"]
