@@ -46,10 +46,10 @@ const Hero = () => {
       </div>
 
       <div className="relative z-10 container mx-auto px-4 min-h-screen flex items-center">
-        <div className="grid lg:grid-cols-2 gap-12 items-center w-full">
+        <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-center w-full">
           
           {/* Left Content */}
-          <div className="text-center lg:text-left space-y-8">
+          <div className="text-center lg:text-left space-y-6">
             <div className="space-y-4">
               <h1 className="text-5xl lg:text-7xl font-black text-gray-900">
                 <span className="bg-gradient-to-r from-orange-500 to-amber-600 bg-clip-text text-transparent">
