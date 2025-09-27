@@ -1,74 +1,74 @@
-import { pgTable, text, serial, integer, boolean, timestamp, decimal } from "drizzle-orm/pg-core";
+import { mysqlTable, text, int, boolean, timestamp, decimal, json } from "drizzle-orm/mysql-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
 
 // Admin users table
-export const admins = pgTable("admins", {
-  id: serial("id").primaryKey(),
+export const admins = mysqlTable("admins", {
+  id: int("id").primaryKey().autoincrement(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 // Cities table
-export const cities = pgTable("cities", {
-  id: serial("id").primaryKey(),
+export const cities = mysqlTable("cities", {
+  id: int("id").primaryKey().autoincrement(),
   name: text("name").notNull(),
   image: text("image").notNull(),
-  restaurantCount: integer("restaurant_count").default(0),
+  restaurantCount: int("restaurant_count").default(0),
   isPopular: boolean("is_popular").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 // Restaurants table
-export const restaurants = pgTable("restaurants", {
-  id: serial("id").primaryKey(),
+export const restaurants = mysqlTable("restaurants", {
+  id: int("id").primaryKey().autoincrement(),
   name: text("name").notNull(),
   cuisine: text("cuisine").notNull(),
   rating: decimal("rating", { precision: 2, scale: 1 }).default("4.0"),
   deliveryTime: text("delivery_time").notNull(),
   image: text("image").notNull(),
-  cityId: integer("city_id").references(() => cities.id),
+  cityId: int("city_id").references(() => cities.id),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 // Features table
-export const features = pgTable("features", {
-  id: serial("id").primaryKey(),
+export const features = mysqlTable("features", {
+  id: int("id").primaryKey().autoincrement(),
   title: text("title").notNull(),
   description: text("description").notNull(),
   icon: text("icon").notNull(),
   isActive: boolean("is_active").default(true),
-  order: integer("order").default(0),
+  order: int("order").default(0),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 // Stats table
-export const stats = pgTable("stats", {
-  id: serial("id").primaryKey(),
-  restaurants: integer("restaurants").default(0),
-  cities: integer("cities").default(0),
-  users: integer("users").default(0),
-  orders: integer("orders").default(0),
+export const stats = mysqlTable("stats", {
+  id: int("id").primaryKey().autoincrement(),
+  restaurants: int("restaurants").default(0),
+  cities: int("cities").default(0),
+  users: int("users").default(0),
+  orders: int("orders").default(0),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const footerPages = pgTable("footer_pages", {
-  id: serial("id").primaryKey(),
+export const footerPages = mysqlTable("footer_pages", {
+  id: int("id").primaryKey().autoincrement(),
   title: text("title").notNull(),
   slug: text("slug").notNull().unique(),
   content: text("content").notNull(),
   category: text("category").notNull(),
   isPublished: boolean("is_published").default(true),
-  order: integer("order").default(0),
+  order: int("order").default(0),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const heroSection = pgTable("hero_section", {
-  id: serial("id").primaryKey(),
+export const heroSection = mysqlTable("hero_section", {
+  id: int("id").primaryKey().autoincrement(),
   title: text("title").notNull(),
   subtitle: text("subtitle").notNull(),
   backgroundImage: text("background_image").notNull(),
@@ -78,8 +78,8 @@ export const heroSection = pgTable("hero_section", {
 });
 
 // Footer settings table for complete dynamic footer management
-export const footerSettings = pgTable("footer_settings", {
-  id: serial("id").primaryKey(),
+export const footerSettings = mysqlTable("footer_settings", {
+  id: int("id").primaryKey().autoincrement(),
   // Company Info
   companyName: text("company_name").notNull().default("Qookkar"),
   companyDescription: text("company_description").notNull().default("Qookkar connects food lovers with premium homemade meals from expert home chefs. Fresh, authentic, and gourmet food delivered with care."),
@@ -109,8 +109,8 @@ export const footerSettings = pgTable("footer_settings", {
 });
 
 // Chefs table - authenticated chef users
-export const chefs = pgTable("chefs", {
-  id: serial("id").primaryKey(),
+export const chefs = mysqlTable("chefs", {
+  id: int("id").primaryKey().autoincrement(),
   phone: text("phone").notNull().unique(),
   email: text("email"),
   isActive: boolean("is_active").default(true),
@@ -121,14 +121,14 @@ export const chefs = pgTable("chefs", {
 });
 
 // Chef profiles table - detailed chef information
-export const chefProfiles = pgTable("chef_profiles", {
-  id: serial("id").primaryKey(),
-  chefId: integer("chef_id").references(() => chefs.id).notNull(),
+export const chefProfiles = mysqlTable("chef_profiles", {
+  id: int("id").primaryKey().autoincrement(),
+  chefId: int("chef_id").references(() => chefs.id).notNull(),
   firstName: text("first_name"),
   lastName: text("last_name"),
   kitchenName: text("kitchen_name"),
   kitchenType: text("kitchen_type"), // home_kitchen, restaurant, cloud_kitchen
-  cuisineTypes: text("cuisine_types").array(),
+  cuisineTypes: json("cuisine_types"),
   address: text("address"),
   city: text("city"),
   state: text("state"),
@@ -137,20 +137,20 @@ export const chefProfiles = pgTable("chef_profiles", {
   gstNumber: text("gst_number"),
   panNumber: text("pan_number"),
   experience: text("experience"),
-  specialties: text("specialties").array(),
+  specialties: json("specialties"),
   description: text("description"),
   profileImage: text("profile_image"),
-  kitchenImages: text("kitchen_images").array(),
+  kitchenImages: json("kitchen_images"),
   rating: decimal("rating", { precision: 2, scale: 1 }).default("0.0"),
-  totalOrders: integer("total_orders").default(0),
+  totalOrders: int("total_orders").default(0),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Chef dishes table
-export const chefDishes = pgTable("chef_dishes", {
-  id: serial("id").primaryKey(),
-  chefId: integer("chef_id").references(() => chefs.id).notNull(),
+export const chefDishes = mysqlTable("chef_dishes", {
+  id: int("id").primaryKey().autoincrement(),
+  chefId: int("chef_id").references(() => chefs.id).notNull(),
   name: text("name").notNull(),
   description: text("description"),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
@@ -158,12 +158,12 @@ export const chefDishes = pgTable("chef_dishes", {
   category: text("category").notNull(),
   dishType: text("dish_type").notNull(), // veg, non-veg, vegan
   mealType: text("meal_type").notNull(), // breakfast, lunch, dinner, snack
-  preparationTime: integer("preparation_time").notNull(), // in minutes
-  servingSize: integer("serving_size").default(1),
-  ingredients: text("ingredients").array(),
-  allergens: text("allergens").array(),
+  preparationTime: int("preparation_time").notNull(), // in minutes
+  servingSize: int("serving_size").default(1),
+  ingredients: json("ingredients"),
+  allergens: json("allergens"),
   nutritionalInfo: text("nutritional_info"),
-  images: text("images").array(),
+  images: json("images"),
   isAvailable: boolean("is_available").default(true),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
@@ -171,18 +171,18 @@ export const chefDishes = pgTable("chef_dishes", {
 });
 
 // OTP table for chef authentication
-export const chefOtps = pgTable("chef_otps", {
-  id: serial("id").primaryKey(),
+export const chefOtps = mysqlTable("chef_otps", {
+  id: int("id").primaryKey().autoincrement(),
   phone: text("phone").notNull(),
   otp: text("otp").notNull(),
   expiresAt: timestamp("expires_at").notNull(),
   isUsed: boolean("is_used").default(false),
-  attempts: integer("attempts").default(0),
+  attempts: int("attempts").default(0),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const cookRegistrations = pgTable("cook_registrations", {
-  id: serial("id").primaryKey(),
+export const cookRegistrations = mysqlTable("cook_registrations", {
+  id: int("id").primaryKey().autoincrement(),
   // Personal Information
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
@@ -192,7 +192,7 @@ export const cookRegistrations = pgTable("cook_registrations", {
   // Kitchen Information
   kitchenName: text("kitchen_name").notNull(),
   kitchenType: text("kitchen_type").notNull(), // home_kitchen, restaurant, cloud_kitchen
-  cuisineTypes: text("cuisine_types").array().notNull(), // Array of cuisine types
+  cuisineTypes: json("cuisine_types").notNull(), // Array of cuisine types
   
   // Address Information
   address: text("address").notNull(),
@@ -207,7 +207,7 @@ export const cookRegistrations = pgTable("cook_registrations", {
   
   // Additional Information
   experience: text("experience").notNull(), // years of experience
-  specialties: text("specialties").array(), // special dishes
+  specialties: json("specialties"), // special dishes
   description: text("description"),
   
   // Status
