@@ -490,6 +490,105 @@ app.post("/api/admin/login", async (req, res) => {
     },
   );
 
+  // Chef Authentication Proxy Routes - Forward to Laravel Backend
+  app.post("/api/send-otp", async (req, res) => {
+    try {
+      // Set your Laravel backend URL here
+      const LARAVEL_API_URL = process.env.LARAVEL_API_URL || 'http://localhost:8000/api';
+      
+      const response = await fetch(`${LARAVEL_API_URL}/send-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(req.body)
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        return res.status(response.status).json(data);
+      }
+
+      res.json(data);
+    } catch (error) {
+      console.error("Send OTP proxy error:", error);
+      res.status(500).json({ 
+        error: "Failed to send OTP", 
+        message: "Could not connect to authentication service" 
+      });
+    }
+  });
+
+  app.post("/api/verify-otp", async (req, res) => {
+    try {
+      // Set your Laravel backend URL here
+      const LARAVEL_API_URL = process.env.LARAVEL_API_URL || 'http://localhost:8000/api';
+      
+      const response = await fetch(`${LARAVEL_API_URL}/verify-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(req.body)
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        return res.status(response.status).json(data);
+      }
+
+      res.json(data);
+    } catch (error) {
+      console.error("Verify OTP proxy error:", error);
+      res.status(500).json({ 
+        error: "Failed to verify OTP", 
+        message: "Could not connect to authentication service" 
+      });
+    }
+  });
+
+  // Chef API Proxy Routes - Forward authenticated requests to Laravel
+  app.use("/api/chef", async (req, res) => {
+    try {
+      const LARAVEL_API_URL = process.env.LARAVEL_API_URL || 'http://localhost:8000/api';
+      
+      // Forward the authorization header from the original request
+      const headers: any = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      
+      if (req.headers.authorization) {
+        headers['Authorization'] = req.headers.authorization;
+      }
+
+      const url = req.originalUrl.replace('/api/chef', '');
+      const response = await fetch(`${LARAVEL_API_URL}${url}`, {
+        method: req.method,
+        headers,
+        body: req.method !== 'GET' ? JSON.stringify(req.body) : undefined
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        return res.status(response.status).json(data);
+      }
+
+      res.json(data);
+    } catch (error) {
+      console.error("Chef API proxy error:", error);
+      res.status(500).json({ 
+        error: "API request failed", 
+        message: "Could not connect to backend service" 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

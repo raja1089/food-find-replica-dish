@@ -27,18 +27,33 @@ const ChefLogin = () => {
 
     setIsLoading(true);
     try {
-      // TODO: Call Laravel API to send OTP
-      // await fetch('YOUR_LARAVEL_API/api/chef/send-otp', { ... })
+      const response = await fetch('/api/send-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          phone: phone,
+          user_type: 'cook'
+        })
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to send OTP');
+      }
       
       toast({
         title: "OTP Sent",
         description: `Verification code sent to +91 ${phone}`,
       });
       setStep("otp");
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to send OTP. Please try again.",
+        description: error.message || "Failed to send OTP. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -59,20 +74,40 @@ const ChefLogin = () => {
 
     setIsLoading(true);
     try {
-      // TODO: Call Laravel API to verify OTP and get token
-      // const response = await fetch('YOUR_LARAVEL_API/api/chef/verify-otp', { ... })
-      // const { token, chef } = await response.json();
-      // localStorage.setItem('chef_token', token);
+      const response = await fetch('/api/verify-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          phone: phone,
+          otp: otp,
+          user_type: 'cook'
+        })
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Invalid OTP');
+      }
+
+      // Store the authentication token
+      if (data.token) {
+        localStorage.setItem('chef_token', data.token);
+        localStorage.setItem('chef_data', JSON.stringify(data.chef || data.user));
+      }
       
       toast({
         title: "Login Successful",
         description: "Welcome back, Chef!",
       });
       setLocation("/chef/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Invalid OTP",
-        description: "The OTP you entered is incorrect. Please try again.",
+        description: error.message || "The OTP you entered is incorrect. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -83,15 +118,32 @@ const ChefLogin = () => {
   const handleResendOtp = async () => {
     setIsLoading(true);
     try {
-      // TODO: Call Laravel API to resend OTP
+      const response = await fetch('/api/send-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          phone: phone,
+          user_type: 'cook'
+        })
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to resend OTP');
+      }
+      
       toast({
         title: "OTP Resent",
         description: `New verification code sent to +91 ${phone}`,
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to resend OTP. Please try again.",
+        description: error.message || "Failed to resend OTP. Please try again.",
         variant: "destructive",
       });
     } finally {
