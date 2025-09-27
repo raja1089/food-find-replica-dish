@@ -551,7 +551,7 @@ app.post("/api/admin/login", async (req, res) => {
         });
       }
 
-      console.log(`✅ Verifying OTP ${otp} for ${phone} (${user_type})`);
+      console.log(`✅ Verifying OTP for ${phone} (${user_type})`);
       
       // Call real OTP verification API
       const VERIFY_OTP_API_URL = 'https://sealifepharmaceuticals.com/api/verify-otp';
