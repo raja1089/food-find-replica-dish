@@ -52,19 +52,21 @@ const Header = () => {
             </nav>
 
             <div className="flex items-center space-x-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-gray-600 hover:text-gray-900 font-medium"
-              >
-                Sign in
-              </Button>
+              <Link href="/chef/login">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-600 hover:text-gray-900 font-medium"
+                >
+                  Chef Login
+                </Button>
+              </Link>
               <Link href="/kitchen-registration">
                 <Button
                   size="sm"
                   className="bg-gray-900 text-white hover:bg-gray-800 rounded-md px-4 py-2 font-medium transition-colors duration-200"
                 >
-                  Join Qookkar
+                  Join as Chef
                 </Button>
               </Link>
             </div>
@@ -107,19 +109,21 @@ const Header = () => {
             </nav>
 
             <div className="pt-4 mt-4 border-t border-gray-100 space-y-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full justify-start text-gray-600 hover:text-gray-900 font-medium"
-              >
-                Sign in
-              </Button>
+              <Link href="/chef/login">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start text-gray-600 hover:text-gray-900 font-medium"
+                >
+                  Chef Login
+                </Button>
+              </Link>
               <Link href="/kitchen-registration">
                 <Button
                   size="sm"
                   className="w-full bg-gray-900 text-white hover:bg-gray-800 rounded-md py-2 font-medium"
                 >
-                  Join Qookkar
+                  Join as Chef
                 </Button>
               </Link>
             </div>

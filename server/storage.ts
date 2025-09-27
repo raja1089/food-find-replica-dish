@@ -8,6 +8,10 @@ import {
   footerPages,
   heroSection,
   cookRegistrations,
+  chefs,
+  chefProfiles,
+  chefDishes,
+  chefOtps,
   type Admin, 
   type InsertAdmin,
   type City,
@@ -23,7 +27,15 @@ import {
   type HeroSection,
   type InsertHeroSection,
   type CookRegistration,
-  type InsertCookRegistration
+  type InsertCookRegistration,
+  type Chef,
+  type InsertChef,
+  type ChefProfile,
+  type InsertChefProfile,
+  type ChefDish,
+  type InsertChefDish,
+  type ChefOtp,
+  type InsertChefOtp
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
