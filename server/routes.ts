@@ -493,7 +493,6 @@ app.post("/api/admin/login", async (req, res) => {
   // Chef Authentication Proxy Routes - Forward to Laravel Backend
   app.post("/api/send-otp", async (req, res) => {
     try {
-      // For testing - bypass Laravel and return success
       const { phone, user_type } = req.body;
       
       if (!phone) {
@@ -502,41 +501,42 @@ app.post("/api/admin/login", async (req, res) => {
         });
       }
 
-      // Mock success response for testing
-      console.log(`📱 Sending OTP to ${phone} for ${user_type}`);
+      console.log(`📱 Sending real OTP to ${phone} for ${user_type}`);
       
-      res.json({ 
-        success: true, 
-        message: "OTP sent successfully",
-        phone: phone 
-      });
+      // Call real OTP API
+      const OTP_API_URL = 'https://sealifepharmaceuticals.com/api/send-otp';
       
-      // TODO: Uncomment below when Laravel backend is ready
-      /*
-      const LARAVEL_API_URL = process.env.LARAVEL_API_URL || 'http://localhost:8000/api';
-      
-      const response = await fetch(`${LARAVEL_API_URL}/send-otp`, {
+      const response = await fetch(OTP_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: JSON.stringify(req.body)
+        body: JSON.stringify({
+          mobile_number: phone,
+          user_type: user_type || 'cook'
+        })
       });
 
       const data = await response.json();
       
       if (!response.ok) {
-        return res.status(response.status).json(data);
+        console.error('OTP API Error:', response.status, data);
+        return res.status(response.status).json({
+          error: data.message || data.error || "Failed to send OTP",
+          details: data
+        });
       }
 
+      console.log('✅ OTP sent successfully:', data);
       res.json(data);
-      */
+      
     } catch (error) {
       console.error("Send OTP error:", error);
       res.status(500).json({ 
         error: "Failed to send OTP", 
-        message: "Could not connect to authentication service" 
+        message: "Could not connect to authentication service",
+        details: error instanceof Error ? error.message : String(error)
       });
     }
   });
@@ -551,54 +551,36 @@ app.post("/api/admin/login", async (req, res) => {
         });
       }
 
-      // For testing - accept any 6-digit OTP
-      if (otp.length !== 6) {
-        return res.status(400).json({ 
-          error: "Invalid OTP format" 
-        });
-      }
-
-      // Mock success response for testing
       console.log(`✅ Verifying OTP ${otp} for ${phone} (${user_type})`);
       
-      const mockChefData = {
-        id: 1,
-        phone: phone,
-        name: "Test Chef",
-        email: "chef@example.com",
-        kitchen_name: "Test Kitchen",
-        user_type: user_type
-      };
-
-      res.json({ 
-        success: true, 
-        message: "OTP verified successfully",
-        token: "mock_jwt_token_for_testing",
-        chef: mockChefData,
-        user: mockChefData // Laravel might return 'user' instead of 'chef'
-      });
+      // Call real OTP verification API
+      const VERIFY_OTP_API_URL = 'https://sealifepharmaceuticals.com/api/verify-otp';
       
-      // TODO: Uncomment below when Laravel backend is ready
-      /*
-      const LARAVEL_API_URL = process.env.LARAVEL_API_URL || 'http://localhost:8000/api';
-      
-      const response = await fetch(`${LARAVEL_API_URL}/verify-otp`, {
+      const response = await fetch(VERIFY_OTP_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: JSON.stringify(req.body)
+        body: JSON.stringify({
+          mobile_number: phone,
+          otp: otp,
+          user_type: user_type || 'cook'
+        })
       });
 
       const data = await response.json();
       
       if (!response.ok) {
-        return res.status(response.status).json(data);
+        console.error('OTP Verify API Error:', response.status, data);
+        return res.status(response.status).json({
+          error: data.message || data.error || "Failed to verify OTP",
+          details: data
+        });
       }
 
+      console.log('✅ OTP verified successfully:', data);
       res.json(data);
-      */
     } catch (error) {
       console.error("Verify OTP error:", error);
       res.status(500).json({ 
