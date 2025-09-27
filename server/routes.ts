@@ -493,7 +493,26 @@ app.post("/api/admin/login", async (req, res) => {
   // Chef Authentication Proxy Routes - Forward to Laravel Backend
   app.post("/api/send-otp", async (req, res) => {
     try {
-      // Set your Laravel backend URL here
+      // For testing - bypass Laravel and return success
+      const { phone, user_type } = req.body;
+      
+      if (!phone) {
+        return res.status(400).json({ 
+          error: "Phone number is required" 
+        });
+      }
+
+      // Mock success response for testing
+      console.log(`📱 Sending OTP to ${phone} for ${user_type}`);
+      
+      res.json({ 
+        success: true, 
+        message: "OTP sent successfully",
+        phone: phone 
+      });
+      
+      // TODO: Uncomment below when Laravel backend is ready
+      /*
       const LARAVEL_API_URL = process.env.LARAVEL_API_URL || 'http://localhost:8000/api';
       
       const response = await fetch(`${LARAVEL_API_URL}/send-otp`, {
@@ -512,8 +531,9 @@ app.post("/api/admin/login", async (req, res) => {
       }
 
       res.json(data);
+      */
     } catch (error) {
-      console.error("Send OTP proxy error:", error);
+      console.error("Send OTP error:", error);
       res.status(500).json({ 
         error: "Failed to send OTP", 
         message: "Could not connect to authentication service" 
@@ -523,7 +543,43 @@ app.post("/api/admin/login", async (req, res) => {
 
   app.post("/api/verify-otp", async (req, res) => {
     try {
-      // Set your Laravel backend URL here
+      const { phone, otp, user_type } = req.body;
+      
+      if (!phone || !otp) {
+        return res.status(400).json({ 
+          error: "Phone number and OTP are required" 
+        });
+      }
+
+      // For testing - accept any 6-digit OTP
+      if (otp.length !== 6) {
+        return res.status(400).json({ 
+          error: "Invalid OTP format" 
+        });
+      }
+
+      // Mock success response for testing
+      console.log(`✅ Verifying OTP ${otp} for ${phone} (${user_type})`);
+      
+      const mockChefData = {
+        id: 1,
+        phone: phone,
+        name: "Test Chef",
+        email: "chef@example.com",
+        kitchen_name: "Test Kitchen",
+        user_type: user_type
+      };
+
+      res.json({ 
+        success: true, 
+        message: "OTP verified successfully",
+        token: "mock_jwt_token_for_testing",
+        chef: mockChefData,
+        user: mockChefData // Laravel might return 'user' instead of 'chef'
+      });
+      
+      // TODO: Uncomment below when Laravel backend is ready
+      /*
       const LARAVEL_API_URL = process.env.LARAVEL_API_URL || 'http://localhost:8000/api';
       
       const response = await fetch(`${LARAVEL_API_URL}/verify-otp`, {
@@ -542,8 +598,9 @@ app.post("/api/admin/login", async (req, res) => {
       }
 
       res.json(data);
+      */
     } catch (error) {
-      console.error("Verify OTP proxy error:", error);
+      console.error("Verify OTP error:", error);
       res.status(500).json({ 
         error: "Failed to verify OTP", 
         message: "Could not connect to authentication service" 
