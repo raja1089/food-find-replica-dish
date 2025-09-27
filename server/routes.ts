@@ -792,6 +792,33 @@ app.post("/api/admin/login", async (req, res) => {
     }
   });
 
+  app.post("/api/cook/analytics/:cook_id", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      const { cook_id: urlCookId } = req.params;
+      
+      // Verify that the requested cook_id matches the authenticated cook
+      if (parseInt(urlCookId) !== cook_id) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      // Fetch cook analytics data
+      res.json({ 
+        cook_id,
+        message: "Cook analytics retrieved successfully",
+        analytics: {
+          total_orders: 0,
+          revenue: 0,
+          rating: 0,
+          active_dishes: 0
+        }
+        // Add actual analytics data here
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch cook analytics" });
+    }
+  });
+
   // Chef API Proxy Routes - Forward authenticated requests to Laravel
   app.use("/api/chef", async (req, res) => {
     try {
