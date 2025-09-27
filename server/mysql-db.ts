@@ -2,10 +2,10 @@ import mysql from 'mysql2/promise';
 
 // MySQL connection pool for kitchen registration data
 const pool = mysql.createPool({
-  host: process.env.DB_HOST || '156.67.74.205',
-  user: process.env.DB_USER || 'niharsk_homemadefoodfrontend',
-  password: process.env.DB_PASSWORD || 'niharsk_homemadefoodfrontend',
-  database: process.env.DB_NAME || 'niharsk_homemadefoodfrontend',
+  host: process.env.MYSQL_HOST || '103.38.50.233',
+  user: process.env.MYSQL_USER || 'niharsk_qookkar',
+  password: process.env.MYSQL_PASSWORD || 'niharsk_qookkar',
+  database: process.env.MYSQL_DATABASE || 'niharsk_qookkar',
   waitForConnections: true,
   connectionLimit: 10,
   port: 3306,
