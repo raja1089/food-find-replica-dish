@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Save, Upload, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -32,12 +32,14 @@ const AdminHero = () => {
 
   const { data: heroData, isLoading } = useQuery({
     queryKey: ["/api/admin/hero"],
-    onSuccess: (data) => {
-      if (data) {
-        setFormData(data);
-      }
-    },
   });
+
+  // Handle data when it's available
+  useEffect(() => {
+    if (heroData) {
+      setFormData(heroData);
+    }
+  }, [heroData]);
 
   const updateMutation = useMutation({
     mutationFn: async (data: HeroData) => {
