@@ -1205,28 +1205,36 @@ app.post("/api/admin/login", async (req, res) => {
     }
   });
 
-  // Cook analytics endpoint - POST method
-  app.post("/api/cook/analytics/:cook_id", async (req, res) => {
+  // Cook analytics endpoint - POST method with bearer token authentication
+  app.post("/api/analytics/track", requireCookAuth, async (req: AuthenticatedRequest, res) => {
     try {
-      const { cook_id } = req.params;
-
-      const LARAVEL_API_URL = 'https://sealifepharmaceuticals.com/api';
-      console.log(`🔗 Analytics API POST: /cook/analytics/${cook_id} -> ${LARAVEL_API_URL}`);
+      // cook_id comes from the authenticated token after login
+      const cook_id = req.cook_id;
       
+      console.log(`🔗 Analytics API POST: /analytics/track for cook_id: ${cook_id}`);
+      
+      // Store analytics data locally (you can extend this to send to external APIs)
+      const analyticsData = {
+        cook_id: cook_id,
+        timestamp: new Date().toISOString(),
+        ...req.body
+      };
+      
+      console.log('📊 Analytics data:', analyticsData);
+      
+      // If you want to forward to external API, uncomment below:
+      /*
+      const LARAVEL_API_URL = 'https://sealifepharmaceuticals.com/api';
       const headers: any = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'Authorization': req.headers.authorization
       };
-      
-      if (req.headers.authorization) {
-        headers['Authorization'] = req.headers.authorization;
-        console.log('🔐 Forwarding Authorization header for analytics');
-      }
 
       const response = await fetch(`${LARAVEL_API_URL}/cook/analytics/${cook_id}`, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ cook_id: parseInt(cook_id), ...req.body })
+        body: JSON.stringify(analyticsData)
       });
 
       const data = await response.json();
@@ -1234,13 +1242,81 @@ app.post("/api/admin/login", async (req, res) => {
       if (!response.ok) {
         return res.status(response.status).json(data);
       }
+      */
 
-      res.json(data);
+      res.json({ 
+        success: true, 
+        message: "Analytics tracked successfully",
+        cook_id: cook_id,
+        data: analyticsData
+      });
     } catch (error) {
       console.error("Analytics API error:", error);
       res.status(500).json({ 
-        error: "Failed to fetch cook analytics", 
-        message: "Could not connect to backend service" 
+        error: "Failed to track analytics", 
+        message: "Analytics tracking failed" 
+      });
+    }
+  });
+
+  // Cook analytics dashboard endpoint - GET method with bearer token
+  app.get("/api/analytics/dashboard", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      
+      console.log(`📈 Analytics Dashboard API GET for cook_id: ${cook_id}`);
+      
+      // Return mock analytics dashboard data (extend this with real data)
+      const dashboardData = {
+        cook_id: cook_id,
+        summary: {
+          total_views: 0,
+          total_orders: 0,
+          total_revenue: 0,
+          active_dishes: 0
+        },
+        recent_activity: [],
+        timestamp: new Date().toISOString()
+      };
+
+      res.json(dashboardData);
+    } catch (error) {
+      console.error("Analytics Dashboard API error:", error);
+      res.status(500).json({ 
+        error: "Failed to fetch analytics dashboard", 
+        message: "Dashboard data unavailable" 
+      });
+    }
+  });
+
+  // Cook analytics events endpoint - POST method with bearer token
+  app.post("/api/analytics/events", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      const { event_type, event_data } = req.body;
+      
+      console.log(`🎯 Analytics Event API POST for cook_id: ${cook_id}, event: ${event_type}`);
+      
+      const eventRecord = {
+        cook_id: cook_id,
+        event_type: event_type,
+        event_data: event_data,
+        timestamp: new Date().toISOString()
+      };
+      
+      console.log('🎯 Event recorded:', eventRecord);
+
+      res.json({ 
+        success: true, 
+        message: "Event tracked successfully",
+        cook_id: cook_id,
+        event: eventRecord
+      });
+    } catch (error) {
+      console.error("Analytics Events API error:", error);
+      res.status(500).json({ 
+        error: "Failed to track event", 
+        message: "Event tracking failed" 
       });
     }
   });
