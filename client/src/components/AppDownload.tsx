@@ -35,7 +35,7 @@ const AppDownload = () => {
       <div className="container mx-auto px-6 max-w-7xl text-center">
         {/* Header */}
         <h2 className="text-5xl font-extrabold text-gray-900 mb-4">
-          Pure Homemade Food, Delivered
+          Premium Qookkar Experience
         </h2>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-16">
           Discover delicious meals made by passionate home chefs — healthy, clean, affordable, and full of love.

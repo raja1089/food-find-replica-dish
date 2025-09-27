@@ -17,7 +17,7 @@ const Hero = () => {
       {/* Center Content */}
       <div className="relative z-10 flex-grow flex items-center justify-center text-center px-6">
         <div>
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-4">NOM NOM</h1>
+          <h1 className="text-4xl md:text-6xl font-extrabold mb-4">QOOKKAR</h1>
           <p className="text-lg md:text-xl text-white/90 max-w-xl mx-auto">
             India’s #1 homemade food delivery app
           </p>

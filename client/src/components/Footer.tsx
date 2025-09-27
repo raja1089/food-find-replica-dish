@@ -72,10 +72,10 @@ const Footer = () => {
               <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
                 <ChefHat className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-primary">HomemadeFood</span>
+              <span className="text-xl font-bold text-primary">Qookkar</span>
             </div>
             <p className="text-muted-foreground text-sm mb-6">
-              Connecting food lovers with authentic homemade meals from local home chefs. Fresh, healthy, and delicious food delivered to your doorstep.
+              Qookkar connects food lovers with premium homemade meals from expert home chefs. Fresh, authentic, and gourmet food delivered with care.
             </p>
             
             {/* Contact Info */}
@@ -90,7 +90,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-2 text-muted-foreground">
                 <Mail className="w-4 h-4" />
-                <span>info@homemadefood.com</span>
+                <span>info@qookkar.com</span>
               </div>
             </div>
           </div>

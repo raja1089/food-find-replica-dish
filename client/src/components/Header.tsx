@@ -26,7 +26,7 @@ const Header = () => {
           <Link href="/" className="flex items-center group">
             <img
               src="/logo.png"
-              alt="Homemade Food Logo"
+              alt="Qookkar Logo"
               className="w-16 h-16 object-contain transform transition-all group-hover:scale-110 group-hover:rotate-6"
             />
           </Link>
