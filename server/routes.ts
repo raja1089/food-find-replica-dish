@@ -15,6 +15,7 @@ import {
   insertFeatureSchema,
   insertStatsSchema,
   insertFooterPageSchema,
+  insertFooterSettingsSchema,
   insertHeroSectionSchema,
   insertCookRegistrationSchema,
 } from "@shared/schema";
@@ -369,6 +370,26 @@ app.post("/api/admin/login", async (req, res) => {
       res.json({ message: "Footer page deleted successfully" });
     } catch (error) {
       res.status(500).json({ error: "Failed to delete footer page" });
+    }
+  });
+
+  // Footer settings management
+  app.get("/api/admin/footer-settings", requireAuth, async (req, res) => {
+    try {
+      const settings = await storage.getFooterSettings();
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch footer settings" });
+    }
+  });
+
+  app.put("/api/admin/footer-settings", requireAuth, async (req, res) => {
+    try {
+      const settingsData = insertFooterSettingsSchema.parse(req.body);
+      const settings = await storage.updateFooterSettings(settingsData);
+      res.json(settings);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid footer settings data" });
     }
   });
 
