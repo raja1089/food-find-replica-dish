@@ -1,6 +1,8 @@
-import { Star, Clock, Bike } from "lucide-react";
+import { Star, Clock, Bike, Heart, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import type { Restaurant } from "@shared/schema";
 
 const RestaurantGrid = () => {
@@ -104,76 +106,120 @@ const RestaurantGrid = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {(restaurants.length > 0 ? restaurants : mockRestaurants).map((restaurant: any, index: number) => (
-            <div
-              key={restaurant.id || index}
-              className="group bg-card rounded-xl overflow-hidden card-shadow hover:shadow-elegant transition-smooth hover:scale-105 cursor-pointer"
-            >
-              {/* Restaurant Image */}
-              <div className="relative overflow-hidden">
-                <img 
-                  src={restaurant.image} 
-                  alt={restaurant.name}
-                  className="w-full h-48 object-cover group-hover:scale-110 transition-smooth"
-                />
-                
-                {/* Offer Badge */}
-                {restaurant.offer && (
-                  <div className="absolute top-3 left-3">
-                    <Badge className="bg-primary text-primary-foreground font-semibold">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {(restaurants.length > 0 ? restaurants : mockRestaurants).map((restaurant: any, index: number) => {
+            const [isLiked, setIsLiked] = useState(false);
+            const [isHovered, setIsHovered] = useState(false);
+            
+            return (
+              <div
+                key={restaurant.id || index}
+                className="group bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                data-testid={`card-restaurant-${restaurant.id || index}`}
+              >
+                {/* Restaurant Image */}
+                <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                  <img 
+                    src={restaurant.image} 
+                    alt={restaurant.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  
+                  {/* Offer Badge */}
+                  {restaurant.offer && (
+                    <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground font-semibold px-2 py-1 rounded-md shadow-sm">
                       {restaurant.offer}
                     </Badge>
-                  </div>
-                )}
-                
-                {/* Promoted Badge */}
-                {restaurant.promoted && (
-                  <div className="absolute top-3 right-3">
-                    <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 font-medium">
+                  )}
+                  
+                  {/* Promoted Badge */}
+                  {restaurant.promoted && (
+                    <Badge variant="secondary" className="absolute top-3 right-12 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 font-medium">
                       Promoted
                     </Badge>
-                  </div>
-                )}
+                  )}
+                  
+                  {/* Heart Icon */}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="absolute top-3 right-3 h-8 w-8 p-0 bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsLiked(!isLiked);
+                    }}
+                    data-testid={`button-like-${restaurant.id || index}`}
+                  >
+                    <Heart 
+                      className={`h-4 w-4 transition-colors duration-200 ${
+                        isLiked ? 'fill-red-500 text-red-500' : 'text-white'
+                      }`} 
+                    />
+                  </Button>
 
-                {/* Quick Action on Hover */}
-                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-smooth flex items-center justify-center">
-                  <div className="bg-white rounded-full px-4 py-2 font-semibold text-primary">
-                    View Menu
-                  </div>
+                  {/* Quick Add Button */}
+                  <Button
+                    size="sm"
+                    className="absolute bottom-3 right-3 h-8 px-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 shadow-lg"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Add to cart logic here
+                    }}
+                    data-testid={`button-add-${restaurant.id || index}`}
+                  >
+                    <Plus className="h-3 w-3 mr-1" />
+                    Add
+                  </Button>
                 </div>
-              </div>
 
-              {/* Restaurant Info */}
-              <div className="p-4 space-y-3">
-                <div>
-                  <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-smooth">
-                    {restaurant.name}
-                  </h3>
-                  <p className="text-muted-foreground text-sm">
-                    {restaurant.cuisine}
-                  </p>
-                </div>
+                {/* Restaurant Info */}
+                <div className="p-4 space-y-3">
+                  <div className="space-y-1">
+                    <h3 className="font-semibold text-lg text-foreground line-clamp-1 group-hover:text-primary transition-colors duration-200">
+                      {restaurant.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground line-clamp-1">
+                      {restaurant.cuisine}
+                    </p>
+                  </div>
 
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center space-x-1">
-                    <div className="flex items-center space-x-1 bg-green-500 text-white px-2 py-1 rounded">
-                      <Star className="w-3 h-3 fill-current" />
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2 py-1 rounded-md">
+                      <Star className="h-3 w-3 fill-current" />
                       <span className="font-medium">{restaurant.rating}</span>
                     </div>
-                    <span className="text-muted-foreground">•</span>
-                    <div className="flex items-center space-x-1 text-muted-foreground">
-                      <Clock className="w-3 h-3" />
+                    
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Clock className="h-3 w-3" />
                       <span>{restaurant.deliveryTime}</span>
                     </div>
                   </div>
-                  <div className="text-muted-foreground font-medium">
-                    {restaurant.price}
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-foreground">
+                      {restaurant.price}
+                    </span>
+                    
+                    <Badge variant="outline" className="text-xs bg-muted/50 border-border">
+                      Free Delivery
+                    </Badge>
                   </div>
+
+                  {/* Hover Animation Bar */}
+                  <div 
+                    className={`h-0.5 bg-primary rounded-full transition-all duration-300 ${
+                      isHovered ? 'w-full' : 'w-0'
+                    }`}
+                  />
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* View More Button */}

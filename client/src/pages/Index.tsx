@@ -4,11 +4,13 @@ import StatsSection from "@/components/StatsSection";
 import FeaturesSection from "@/components/FeaturesSection";
 import AppDownload from "@/components/AppDownload";
 import Footer from "@/components/Footer";
+import { SocialFloatingIcons } from "@/components/SocialFloatingIcons";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      <SocialFloatingIcons />
       <main>
         <Hero />
         <StatsSection />

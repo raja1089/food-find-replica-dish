@@ -152,4 +152,185 @@
     0%, 100% { box-shadow: 0 0 20px hsl(var(--primary) / 0.3); }
     50% { box-shadow: 0 0 30px hsl(var(--primary) / 0.5); }
   }
+
+  /* Brand Social Media Colors */
+  :root {
+    --brand-whatsapp: 142 63% 49%;
+    --brand-instagram-1: 17 81% 59%;
+    --brand-instagram-2: 345 82% 58%;
+    --brand-instagram-3: 262 52% 58%;
+    --brand-facebook: 217 91% 61%;
+    --brand-twitter: 199 89% 49%;
+    --brand-phone: var(--primary);
+    
+    /* Glass effects */
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  .dark {
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Social Media Icon Animations */
+  @keyframes social-slide-in {
+    0% {
+      opacity: 0;
+      transform: translateX(60px) scale(0.8);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+  }
+
+  @keyframes social-glow-pulse {
+    0%, 100% {
+      box-shadow: var(--glass-shadow);
+    }
+    50% {
+      box-shadow: var(--glass-shadow), 0 0 20px var(--glow-color);
+    }
+  }
+
+  @keyframes ripple {
+    0% {
+      transform: scale(0);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+
+  /* Glass Morphism Base */
+  .social-glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+
+  /* Brand Colors */
+  .brand-whatsapp {
+    --glow-color: hsl(var(--brand-whatsapp) / 0.6);
+    background: linear-gradient(135deg, hsl(var(--brand-whatsapp)), hsl(var(--brand-whatsapp) / 0.8));
+  }
+
+  .brand-instagram {
+    --glow-color: hsl(var(--brand-instagram-2) / 0.6);
+    background: linear-gradient(135deg, 
+      hsl(var(--brand-instagram-1)), 
+      hsl(var(--brand-instagram-2)), 
+      hsl(var(--brand-instagram-3))
+    );
+  }
+
+  .brand-facebook {
+    --glow-color: hsl(var(--brand-facebook) / 0.6);
+    background: linear-gradient(135deg, hsl(var(--brand-facebook)), hsl(var(--brand-facebook) / 0.8));
+  }
+
+  .brand-twitter {
+    --glow-color: hsl(var(--brand-twitter) / 0.6);
+    background: linear-gradient(135deg, hsl(var(--brand-twitter)), hsl(var(--brand-twitter) / 0.8));
+  }
+
+  .brand-phone {
+    --glow-color: hsl(var(--primary) / 0.6);
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.8));
+  }
+
+  /* Social Icon States */
+  .social-icon {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .social-icon:hover {
+    transform: scale(1.06) rotate(2deg);
+    box-shadow: var(--glass-shadow), 0 0 25px var(--glow-color);
+  }
+
+  .social-icon:active {
+    transform: scale(1.02) translateY(1px);
+    box-shadow: var(--glass-shadow), 0 0 15px var(--glow-color);
+  }
+
+  .social-icon:focus-visible {
+    outline: 2px solid var(--glow-color);
+    outline-offset: 2px;
+  }
+
+  /* Ripple Effect */
+  .social-icon::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, var(--glow-color) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+  }
+
+  .social-icon.ripple::before {
+    animation: ripple 0.6s ease-out;
+  }
+
+  /* Speed Dial Mobile */
+  .speed-dial {
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .speed-dial.collapsed .social-icon:not(.main-fab) {
+    opacity: 0;
+    transform: scale(0) translateY(20px);
+    pointer-events: none;
+  }
+
+  .speed-dial.expanded .social-icon:not(.main-fab) {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: all;
+  }
+
+  /* Reduced Motion Support */
+  @media (prefers-reduced-motion: reduce) {
+    .social-icon {
+      transition: opacity 0.2s ease;
+    }
+    
+    .social-icon:hover {
+      transform: none;
+      opacity: 0.9;
+    }
+    
+    .social-icon::before {
+      display: none;
+    }
+    
+    @keyframes social-slide-in {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+  }
+
+  /* Animation Classes */
+  .animate-social-slide-in {
+    animation: social-slide-in 0.4s ease-out both;
+  }
+  
+  .animate-social-glow {
+    animation: social-glow-pulse 2s ease-in-out infinite;
+  }
 }
