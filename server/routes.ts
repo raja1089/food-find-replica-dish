@@ -992,13 +992,10 @@ app.post("/api/admin/login", async (req, res) => {
     }
   });
 
-  // Chef API Proxy Routes - Forward authenticated requests to Laravel
-  app.use("/api/chef", async (req, res) => {
+  // Dishes-related endpoints - Forward to Laravel API
+  app.post("/api/add-dishes", requireCookAuth, async (req: AuthenticatedRequest, res) => {
     try {
       const LARAVEL_API_URL = 'https://sealifepharmaceuticals.com/api';
-      console.log(`🔗 Chef API proxy: ${req.method} ${req.originalUrl} -> ${LARAVEL_API_URL}`);
-      
-      // Forward the authorization header from the original request
       const headers: any = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -1006,16 +1003,12 @@ app.post("/api/admin/login", async (req, res) => {
       
       if (req.headers.authorization) {
         headers['Authorization'] = req.headers.authorization;
-        console.log('🔐 Forwarding Authorization header:', req.headers.authorization.substring(0, 20) + '...');
-      } else {
-        console.log('⚠️ No Authorization header found in request');
       }
 
-      const url = req.originalUrl.replace('/api/chef', '');
-      const response = await fetch(`${LARAVEL_API_URL}${url}`, {
-        method: req.method,
+      const response = await fetch(`${LARAVEL_API_URL}/add-dishes`, {
+        method: 'POST',
         headers,
-        body: req.method !== 'GET' ? JSON.stringify(req.body) : undefined
+        body: JSON.stringify(req.body)
       });
 
       const data = await response.json();
@@ -1026,13 +1019,232 @@ app.post("/api/admin/login", async (req, res) => {
 
       res.json(data);
     } catch (error) {
-      console.error("Chef API proxy error:", error);
+      res.status(500).json({ error: "Failed to add dish" });
+    }
+  });
+
+  app.get("/api/dishes", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const LARAVEL_API_URL = 'https://sealifepharmaceuticals.com/api';
+      const headers: any = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      
+      if (req.headers.authorization) {
+        headers['Authorization'] = req.headers.authorization;
+      }
+
+      const response = await fetch(`${LARAVEL_API_URL}/dishes`, {
+        method: 'GET',
+        headers
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        return res.status(response.status).json(data);
+      }
+
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch dishes" });
+    }
+  });
+
+  app.put("/api/update-dish/:id", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const { id } = req.params;
+      const LARAVEL_API_URL = 'https://sealifepharmaceuticals.com/api';
+      const headers: any = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      
+      if (req.headers.authorization) {
+        headers['Authorization'] = req.headers.authorization;
+      }
+
+      const response = await fetch(`${LARAVEL_API_URL}/update-dish/${id}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(req.body)
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        return res.status(response.status).json(data);
+      }
+
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update dish" });
+    }
+  });
+
+  app.post("/api/dishes/:id/photo", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const { id } = req.params;
+      const LARAVEL_API_URL = 'https://sealifepharmaceuticals.com/api';
+      const headers: any = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      
+      if (req.headers.authorization) {
+        headers['Authorization'] = req.headers.authorization;
+      }
+
+      const response = await fetch(`${LARAVEL_API_URL}/dishes/${id}/photo`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(req.body)
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        return res.status(response.status).json(data);
+      }
+
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update dish photo" });
+    }
+  });
+
+  app.delete("/api/dishes/:id", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const { id } = req.params;
+      const LARAVEL_API_URL = 'https://sealifepharmaceuticals.com/api';
+      const headers: any = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      
+      if (req.headers.authorization) {
+        headers['Authorization'] = req.headers.authorization;
+      }
+
+      const response = await fetch(`${LARAVEL_API_URL}/dishes/${id}`, {
+        method: 'DELETE',
+        headers
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        return res.status(response.status).json(data);
+      }
+
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete dish" });
+    }
+  });
+
+  app.get("/api/cook/dishes/:dishId", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const { dishId } = req.params;
+      const LARAVEL_API_URL = 'https://sealifepharmaceuticals.com/api';
+      const headers: any = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      
+      if (req.headers.authorization) {
+        headers['Authorization'] = req.headers.authorization;
+      }
+
+      const response = await fetch(`${LARAVEL_API_URL}/cook/dishes/${dishId}`, {
+        method: 'GET',
+        headers
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        return res.status(response.status).json(data);
+      }
+
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch dish details" });
+    }
+  });
+
+  app.patch("/api/dishes/:id/availability", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const { id } = req.params;
+      const LARAVEL_API_URL = 'https://sealifepharmaceuticals.com/api';
+      const headers: any = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      
+      if (req.headers.authorization) {
+        headers['Authorization'] = req.headers.authorization;
+      }
+
+      const response = await fetch(`${LARAVEL_API_URL}/dishes/${id}/availability`, {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify(req.body)
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        return res.status(response.status).json(data);
+      }
+
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update dish availability" });
+    }
+  });
+
+  // Cook analytics endpoint - POST method
+  app.post("/api/cook/analytics/:cook_id", async (req, res) => {
+    try {
+      const { cook_id } = req.params;
+
+      const LARAVEL_API_URL = 'https://sealifepharmaceuticals.com/api';
+      console.log(`🔗 Analytics API POST: /cook/analytics/${cook_id} -> ${LARAVEL_API_URL}`);
+      
+      const headers: any = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      
+      if (req.headers.authorization) {
+        headers['Authorization'] = req.headers.authorization;
+        console.log('🔐 Forwarding Authorization header for analytics');
+      }
+
+      const response = await fetch(`${LARAVEL_API_URL}/cook/analytics/${cook_id}`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ cook_id: parseInt(cook_id), ...req.body })
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        return res.status(response.status).json(data);
+      }
+
+      res.json(data);
+    } catch (error) {
+      console.error("Analytics API error:", error);
       res.status(500).json({ 
-        error: "API request failed", 
+        error: "Failed to fetch cook analytics", 
         message: "Could not connect to backend service" 
       });
     }
   });
+
 
   const httpServer = createServer(app);
   return httpServer;
