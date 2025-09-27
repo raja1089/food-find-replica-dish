@@ -83,28 +83,28 @@ function SocialIcon({ social, index, isMainFab = false, onClick }: SocialIconPro
         animationDelay: `${index * 120}ms`,
       }}
     >
-      {/* Premium Glass Tooltip */}
-      <div className="absolute right-16 top-1/2 -translate-y-1/2 social-glass rounded-xl px-4 py-2 text-sm font-medium text-white opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap z-50 border border-white/20">
+      {/* Compact Tooltip - Hidden on mobile */}
+      <div className="hidden lg:block absolute right-16 top-1/2 -translate-y-1/2 social-glass-tooltip rounded px-2 py-1 text-xs font-medium text-white opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-50 border border-white/15" role="tooltip">
         <div className="relative z-10">{social.label}</div>
-        <div className="absolute left-full top-1/2 -translate-y-1/2 border-4 border-transparent border-l-white/20"></div>
-        {/* Glass noise overlay */}
-        <div className="absolute inset-0 rounded-xl opacity-30 bg-gradient-to-br from-white/10 to-transparent"></div>
+        <div className="absolute left-full top-1/2 -translate-y-1/2 border-3 border-transparent border-l-black/60"></div>
       </div>
       
-      {/* Premium Social Icon */}
+      {/* Compact Social Icon */}
       <Button
         ref={iconRef}
         asChild={!isMainFab}
-        size="lg"
+        size="sm"
         className={`
           social-icon social-glass ${social.brandClass}
-          h-14 w-14 rounded-full text-white
+          ${isMainFab ? 'h-13 w-13 main-fab' : 'h-12 w-12'} 
+          ${social.id === 'whatsapp' ? 'primary' : ''}
+          rounded text-white
           animate-social-slide-in opacity-0 animation-fill-forwards
-          ${isMainFab ? 'main-fab' : ''}
-          border border-white/20
+          border-white/15 hover:border-white/25
+          min-h-[44px] min-w-[44px]
         `}
         style={{
-          animationDelay: `${index * 120}ms`,
+          animationDelay: `${index * 60}ms`,
         }}
         onClick={isMainFab ? handleClick : undefined}
         data-testid={`social-${social.id}`}
@@ -112,7 +112,7 @@ function SocialIcon({ social, index, isMainFab = false, onClick }: SocialIconPro
       >
         {isMainFab ? (
           <div className="flex items-center justify-center h-full w-full">
-            <Icon className="h-6 w-6 transition-transform duration-300" />
+            <Icon className="h-5 w-5 transition-transform duration-200" />
           </div>
         ) : (
           <a
@@ -122,7 +122,7 @@ function SocialIcon({ social, index, isMainFab = false, onClick }: SocialIconPro
             className="flex items-center justify-center h-full w-full"
             onClick={handleClick}
           >
-            <Icon className="h-6 w-6 transition-transform duration-300" />
+            <Icon className="h-5 w-5 transition-transform duration-200" />
           </a>
         )}
       </Button>
@@ -139,47 +139,50 @@ export function SocialFloatingIcons() {
 
   return (
     <>
-      {/* Desktop Version */}
-      <div className="hidden lg:flex fixed right-6 top-1/2 -translate-y-1/2 z-40 flex-col gap-4">
+      {/* Desktop Version - Premium Spacing */}
+      <div className="hidden lg:flex fixed social-edge-desktop top-1/2 -translate-y-1/2 z-40 flex-col social-spacing-desktop">
         {socialLinks.map((social, index) => (
           <SocialIcon key={social.id} social={social} index={index} />
         ))}
         
-        {/* Contact Card */}
-        <div className="mt-6 text-center animate-social-slide-in opacity-0 animation-fill-forwards" style={{ animationDelay: '600ms' }}>
-          <div className="social-glass rounded-xl px-4 py-3 border border-white/20">
+        {/* Contact Card with proper spacing */}
+        <div className="mt-2 text-center animate-social-slide-in opacity-0 animation-fill-forwards" style={{ animationDelay: '350ms' }}>
+          <div className="social-glass rounded px-2 py-1.5 border border-white/15 min-w-[100px]">
             <div className="relative z-10">
-              <p className="text-xs font-semibold text-white/90 mb-1">Contact Us</p>
-              <p className="text-xs text-white font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
-                24/7 Support
-              </p>
+              <p className="text-xs font-semibold text-white/95">Contact Us</p>
             </div>
-            {/* Glass noise overlay */}
-            <div className="absolute inset-0 rounded-xl opacity-20 bg-gradient-to-br from-white/10 to-transparent"></div>
           </div>
         </div>
       </div>
 
-      {/* Mobile/Tablet Speed Dial */}
-      <div className={`lg:hidden fixed right-4 bottom-24 z-40 speed-dial ${isExpanded ? 'expanded' : 'collapsed'}`}>
-        <div className="flex flex-col-reverse gap-3">
-          {/* Social Icons */}
+      {/* Tablet Version */}
+      <div className="hidden md:flex lg:hidden fixed social-edge-tablet top-1/2 -translate-y-1/2 z-40 flex-col social-spacing-tablet">
+        {socialLinks.map((social, index) => (
+          <SocialIcon key={social.id} social={social} index={index} />
+        ))}
+      </div>
+
+      {/* Mobile Speed Dial with proper spacing */}
+      <div className={`md:hidden fixed social-edge-mobile bottom-[calc(88px+env(safe-area-inset-bottom))] z-40 speed-dial ${isExpanded ? 'expanded' : 'collapsed'}`}>
+        <div className="flex flex-col-reverse social-spacing-mobile">
+          {/* Social Icons with staggered animation */}
           {socialLinks.map((social, index) => (
             <div
               key={social.id}
               style={{
-                transitionDelay: isExpanded ? `${index * 50}ms` : `${(socialLinks.length - index) * 50}ms`,
+                transitionDelay: isExpanded ? `${(index + 1) * 60}ms` : `${(socialLinks.length - index) * 40}ms`,
               }}
             >
               <SocialIcon social={social} index={index} />
             </div>
           ))}
           
-          {/* Main FAB */}
+          {/* Main FAB with proper accessibility */}
           <div 
             role="button"
             aria-expanded={isExpanded}
             aria-label={isExpanded ? "Close contact menu" : "Open contact menu"}
+            className="relative"
           >
             <SocialIcon
               social={{
@@ -193,6 +196,10 @@ export function SocialFloatingIcons() {
               isMainFab={true}
               onClick={toggleSpeedDial}
             />
+            {/* Subtle pulsing indicator for unopened FAB */}
+            {!isExpanded && (
+              <div className="absolute inset-0 rounded-full border-2 border-white/30 animate-ping"></div>
+            )}
           </div>
         </div>
       </div>

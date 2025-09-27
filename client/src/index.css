@@ -153,33 +153,46 @@
     50% { box-shadow: 0 0 30px hsl(var(--primary) / 0.5); }
   }
 
-  /* Brand Social Media Colors */
+  /* Brand Social Media Colors & Spacing System */
   :root {
-    --brand-whatsapp: 142 63% 49%;
-    --brand-instagram-1: 17 81% 59%;
-    --brand-instagram-2: 345 82% 58%;
-    --brand-instagram-3: 262 52% 58%;
-    --brand-facebook: 217 91% 61%;
-    --brand-twitter: 199 89% 49%;
-    --brand-phone: var(--primary);
+    --brand-whatsapp: 120 100% 35%;
+    --brand-instagram: 320 85% 60%;
+    --brand-facebook: 220 90% 55%;
+    --brand-twitter: 200 100% 50%;
+    --brand-phone: 15 85% 55%;
     
-    /* Glass effects */
-    --glass-bg: rgba(255, 255, 255, 0.1);
-    --glass-border: rgba(255, 255, 255, 0.2);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    /* Spacing System */
+    --social-edge-mobile: 16px;
+    --social-edge-tablet: 24px;
+    --social-edge-desktop: 32px;
+    --social-gap-mobile: 8px;
+    --social-gap-tablet: 10px;
+    --social-gap-desktop: 12px;
+    --social-icon-size: 48px;
+    --social-fab-size: 52px;
+    --social-glyph-size: 20px;
+    
+    /* Glass effects with better contrast */
+    --glass-bg: hsla(0, 0%, 100%, 0.15);
+    --glass-border-light: hsla(0, 0%, 100%, 0.25);
+    --glass-border-dark: hsla(0, 0%, 100%, 0.15);
+    --glass-shadow: 0 12px 40px hsla(0, 0%, 0%, 0.12);
+    --glass-tooltip-bg: hsla(0, 0%, 0%, 0.85);
   }
 
   .dark {
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --glass-bg: hsla(0, 0%, 100%, 0.08);
+    --glass-border-light: hsla(0, 0%, 100%, 0.15);
+    --glass-border-dark: hsla(0, 0%, 100%, 0.1);
+    --glass-shadow: 0 12px 40px hsla(0, 0%, 0%, 0.35);
+    --glass-tooltip-bg: hsla(0, 0%, 20%, 0.9);
   }
 
-  /* Social Media Icon Animations */
+  /* Premium Social Media Icon Animations */
   @keyframes social-slide-in {
     0% {
       opacity: 0;
-      transform: translateX(60px) scale(0.8);
+      transform: translateX(40px) scale(0.85);
     }
     100% {
       opacity: 1;
@@ -192,74 +205,84 @@
       box-shadow: var(--glass-shadow);
     }
     50% {
-      box-shadow: var(--glass-shadow), 0 0 20px var(--glow-color);
+      box-shadow: var(--glass-shadow), 0 0 24px var(--glow-color);
     }
   }
 
   @keyframes ripple {
     0% {
       transform: scale(0);
-      opacity: 1;
+      opacity: 0.8;
     }
     100% {
-      transform: scale(4);
+      transform: scale(3.5);
       opacity: 0;
     }
   }
 
-  /* Glass Morphism Base */
-  .social-glass {
-    background: var(--glass-bg);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
+  @keyframes fab-bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
   }
 
-  /* Brand Colors */
+  /* Premium Glass Morphism Base */
+  .social-glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid var(--glass-border-light);
+    box-shadow: var(--glass-shadow);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+  }
+
+  .social-glass-tooltip {
+    background: var(--glass-tooltip-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+  }
+
+  /* Brand Colors - Vibrant Solid Colors */
   .brand-whatsapp {
-    --glow-color: hsl(var(--brand-whatsapp) / 0.6);
-    background: linear-gradient(135deg, hsl(var(--brand-whatsapp)), hsl(var(--brand-whatsapp) / 0.8));
+    --glow-color: hsl(var(--brand-whatsapp) / 0.4);
+    background: hsl(var(--brand-whatsapp));
   }
 
   .brand-instagram {
-    --glow-color: hsl(var(--brand-instagram-2) / 0.6);
-    background: linear-gradient(135deg, 
-      hsl(var(--brand-instagram-1)), 
-      hsl(var(--brand-instagram-2)), 
-      hsl(var(--brand-instagram-3))
-    );
+    --glow-color: hsl(var(--brand-instagram) / 0.4);
+    background: hsl(var(--brand-instagram));
   }
 
   .brand-facebook {
-    --glow-color: hsl(var(--brand-facebook) / 0.6);
-    background: linear-gradient(135deg, hsl(var(--brand-facebook)), hsl(var(--brand-facebook) / 0.8));
+    --glow-color: hsl(var(--brand-facebook) / 0.4);
+    background: hsl(var(--brand-facebook));
   }
 
   .brand-twitter {
-    --glow-color: hsl(var(--brand-twitter) / 0.6);
-    background: linear-gradient(135deg, hsl(var(--brand-twitter)), hsl(var(--brand-twitter) / 0.8));
+    --glow-color: hsl(var(--brand-twitter) / 0.4);
+    background: hsl(var(--brand-twitter));
   }
 
   .brand-phone {
-    --glow-color: hsl(var(--primary) / 0.6);
-    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.8));
+    --glow-color: hsl(var(--brand-phone) / 0.4);
+    background: hsl(var(--brand-phone));
   }
 
-  /* Social Icon States */
+  /* Compact Social Icon States */
   .social-icon {
     position: relative;
     overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 200ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform, box-shadow;
   }
 
   .social-icon:hover {
-    transform: scale(1.06) rotate(2deg);
-    box-shadow: var(--glass-shadow), 0 0 25px var(--glow-color);
+    transform: scale(1.05);
+    box-shadow: var(--glass-shadow), 0 0 16px var(--glow-color);
   }
 
   .social-icon:active {
-    transform: scale(1.02) translateY(1px);
-    box-shadow: var(--glass-shadow), 0 0 15px var(--glow-color);
+    transform: scale(0.95);
+    box-shadow: var(--glass-shadow), 0 0 12px var(--glow-color);
+    transition-duration: 100ms;
   }
 
   .social-icon:focus-visible {
@@ -267,7 +290,20 @@
     outline-offset: 2px;
   }
 
-  /* Ripple Effect */
+  /* Primary action emphasis */
+  .social-icon.primary {
+    box-shadow: var(--glass-shadow), 0 0 12px var(--glow-color);
+  }
+
+  .social-icon:not(.primary) {
+    opacity: 0.95;
+  }
+
+  .social-icon:not(.primary):hover {
+    opacity: 1;
+  }
+
+  /* Premium Ripple Effect */
   .social-icon::before {
     content: '';
     position: absolute;
@@ -275,34 +311,43 @@
     left: 50%;
     width: 0;
     height: 0;
-    background: radial-gradient(circle, var(--glow-color) 0%, transparent 70%);
+    background: radial-gradient(circle, var(--glow-color) 0%, transparent 65%);
     transform: translate(-50%, -50%);
     border-radius: 50%;
     opacity: 0;
     pointer-events: none;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
   }
 
   .social-icon.ripple::before {
-    animation: ripple 0.6s ease-out;
+    animation: ripple 550ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  /* Speed Dial Mobile */
+  /* Premium Speed Dial Mobile */
   .speed-dial {
-    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition: all 320ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 
   .speed-dial.collapsed .social-icon:not(.main-fab) {
     opacity: 0;
-    transform: scale(0) translateY(20px);
+    transform: scale(0.3) translateY(24px);
     pointer-events: none;
+    visibility: hidden;
   }
 
   .speed-dial.expanded .social-icon:not(.main-fab) {
     opacity: 1;
     transform: scale(1) translateY(0);
     pointer-events: all;
+    visibility: visible;
   }
+
+  /* Staggered animation for speed dial */
+  .speed-dial.expanded .social-icon:not(.main-fab):nth-child(1) { transition-delay: 50ms; }
+  .speed-dial.expanded .social-icon:not(.main-fab):nth-child(2) { transition-delay: 100ms; }
+  .speed-dial.expanded .social-icon:not(.main-fab):nth-child(3) { transition-delay: 150ms; }
+  .speed-dial.expanded .social-icon:not(.main-fab):nth-child(4) { transition-delay: 200ms; }
+  .speed-dial.expanded .social-icon:not(.main-fab):nth-child(5) { transition-delay: 250ms; }
 
   /* Reduced Motion Support */
   @media (prefers-reduced-motion: reduce) {
@@ -325,12 +370,21 @@
     }
   }
 
-  /* Animation Classes */
+  /* Premium Animation Classes */
   .animate-social-slide-in {
-    animation: social-slide-in 0.4s ease-out both;
+    animation: social-slide-in 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
   
   .animate-social-glow {
-    animation: social-glow-pulse 2s ease-in-out infinite;
+    animation: social-glow-pulse 3s ease-in-out infinite;
   }
+
+  /* Responsive spacing utilities */
+  .social-spacing-mobile { gap: var(--social-gap-mobile); }
+  .social-spacing-tablet { gap: var(--social-gap-tablet); }
+  .social-spacing-desktop { gap: var(--social-gap-desktop); }
+
+  .social-edge-mobile { right: var(--social-edge-mobile); }
+  .social-edge-tablet { right: var(--social-edge-tablet); }
+  .social-edge-desktop { right: var(--social-edge-desktop); }
 }
