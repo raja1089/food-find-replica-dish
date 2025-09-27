@@ -819,6 +819,179 @@ app.post("/api/admin/login", async (req, res) => {
     }
   });
 
+  // Dishes-related GET endpoints
+  app.get("/api/dishes", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      // Fetch all dishes for the authenticated cook
+      res.json({ 
+        cook_id,
+        message: "Dishes retrieved successfully",
+        dishes: []
+        // Add actual dishes data here
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch dishes" });
+    }
+  });
+
+  app.get("/api/dish-types", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      // Fetch dish types
+      res.json({ 
+        cook_id,
+        message: "Dish types retrieved successfully",
+        dish_types: ["veg", "non-veg", "vegan", "jain"]
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch dish types" });
+    }
+  });
+
+  app.get("/api/meal-types", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      // Fetch meal types
+      res.json({ 
+        cook_id,
+        message: "Meal types retrieved successfully",
+        meal_types: ["breakfast", "lunch", "dinner", "snack", "beverage"]
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch meal types" });
+    }
+  });
+
+  app.get("/api/dishes/by-dish-type/:id", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      const { id } = req.params;
+      // Fetch dishes by dish type
+      res.json({ 
+        cook_id,
+        dish_type_id: id,
+        message: "Dishes by dish type retrieved successfully",
+        dishes: []
+        // Add actual dishes data here
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch dishes by dish type" });
+    }
+  });
+
+  app.get("/api/subregion-tags/:cuisine_id", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      const { cuisine_id } = req.params;
+      // Fetch subregion tags for cuisine
+      res.json({ 
+        cook_id,
+        cuisine_id,
+        message: "Subregion tags retrieved successfully",
+        subregion_tags: []
+        // Add actual subregion tags data here
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch subregion tags" });
+    }
+  });
+
+  // Orders-related GET endpoints
+  app.get("/api/orders/:id", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      const { id } = req.params;
+      // Fetch specific order details
+      res.json({ 
+        cook_id,
+        order_id: id,
+        message: "Order details retrieved successfully",
+        order: {}
+        // Add actual order data here
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch order details" });
+    }
+  });
+
+  app.get("/api/my-orders", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      // Fetch orders for the authenticated cook
+      res.json({ 
+        cook_id,
+        message: "My orders retrieved successfully",
+        orders: []
+        // Add actual orders data here
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch my orders" });
+    }
+  });
+
+  app.get("/api/orders/tracking/:id", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      const { id } = req.params;
+      // Fetch order tracking information
+      res.json({ 
+        cook_id,
+        order_id: id,
+        message: "Order tracking retrieved successfully",
+        tracking: {
+          status: "preparing",
+          estimated_time: "30 minutes",
+          current_location: null
+        }
+        // Add actual tracking data here
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch order tracking" });
+    }
+  });
+
+  app.get("/api/tracking/orders/:id", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      const { id } = req.params;
+      // Track order status
+      res.json({ 
+        cook_id,
+        order_id: id,
+        message: "Order tracking status retrieved successfully",
+        tracking_status: {
+          order_placed: true,
+          confirmed: true,
+          preparing: true,
+          ready: false,
+          picked_up: false,
+          delivered: false
+        }
+        // Add actual tracking status data here
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to track order" });
+    }
+  });
+
+  app.get("/api/orders/user/:userId", requireCookAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const cook_id = req.cook_id;
+      const { userId } = req.params;
+      // Fetch orders for specific user (cook can see their customer orders)
+      res.json({ 
+        cook_id,
+        user_id: userId,
+        message: "User orders retrieved successfully",
+        orders: []
+        // Add actual user orders data here
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch user orders" });
+    }
+  });
+
   // Chef API Proxy Routes - Forward authenticated requests to Laravel
   app.use("/api/chef", async (req, res) => {
     try {
