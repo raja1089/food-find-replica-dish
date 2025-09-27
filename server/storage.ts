@@ -95,9 +95,9 @@ export interface IStorage {
 export class DatabaseStorage implements IStorage {
   // Admin operations
   async getAdminByUsername(username: string): Promise<Admin | undefined> {
-    console.log("🔍 Checking MySQL for admin:", username);
+    console.log("🔍 Checking PostgreSQL for admin:", username);
     const [admin] = await db.select().from(admins).where(eq(admins.username, username));
-  console.log("Admin object from DB:", admin);
+    console.log("Admin object from DB:", admin);
     console.log("🔑 Admin found:", admin);
     return admin;
   }

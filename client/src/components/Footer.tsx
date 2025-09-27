@@ -46,11 +46,8 @@ const Footer = () => {
       ...(groupedPages["Cooks"] ? groupedPages["Cooks"].map((page: any) => ({ name: page.title, href: `/page/${page.slug}` })) : []),
     ],
     legal: [
-      { name: "Privacy Policy", href: "#" },
-      { name: "Terms of Service", href: "#" },
-      { name: "Cookie Policy", href: "#" },
-      { name: "Refund Policy", href: "#" },
-      ...(groupedPages["Legal"] ? groupedPages["Legal"].map((page: any) => ({ name: page.title, href: `/page/${page.slug}` })) : []),
+      ...(groupedPages["legal"] ? groupedPages["legal"].map((page: any) => ({ name: page.title, href: `/page/${page.slug}` })) : []),
+      ...(groupedPages["support"] ? groupedPages["support"].map((page: any) => ({ name: page.title, href: `/page/${page.slug}` })) : []),
     ]
   };
 

@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { db } from "./db";
-import { admins, cities, restaurants, features, stats } from "@shared/schema";
+import { admins, cities, restaurants, features, stats, footerPages } from "@shared/schema";
 
 async function seed() {
   try {
@@ -9,7 +9,7 @@ async function seed() {
     // Create default admin user
     const hashedPassword = await bcrypt.hash("admin123", 10);
     await db.insert(admins).values({
-      username: "adminok",
+      username: "admin",
       password: hashedPassword,
     }).onConflictDoNothing();
 
@@ -126,6 +126,112 @@ async function seed() {
       users: 50000000,
       orders: 1000000000
     }).onConflictDoNothing();
+
+    // Create footer pages
+    const footerPagesData = [
+      {
+        title: "Privacy Policy",
+        slug: "privacy-policy",
+        content: `
+          <h1>Privacy Policy</h1>
+          <p>This Privacy Policy describes how QOOKKAR collects, uses, and protects your personal information when you use our food delivery platform.</p>
+          
+          <h2>Information We Collect</h2>
+          <p>We collect information you provide directly to us, such as when you create an account, place an order, or contact us.</p>
+          
+          <h2>How We Use Your Information</h2>
+          <p>We use the information we collect to provide, maintain, and improve our services, process orders, and communicate with you.</p>
+          
+          <h2>Information Sharing</h2>
+          <p>We do not sell, trade, or otherwise transfer your personal information to third parties without your consent, except as described in this policy.</p>
+          
+          <h2>Contact Us</h2>
+          <p>If you have any questions about this Privacy Policy, please contact us at privacy@qookkar.com</p>
+        `,
+        category: "legal",
+        isPublished: true,
+        order: 1
+      },
+      {
+        title: "Terms and Conditions",
+        slug: "terms-and-conditions",
+        content: `
+          <h1>Terms and Conditions</h1>
+          <p>These Terms and Conditions govern your use of the QOOKKAR platform and services.</p>
+          
+          <h2>Acceptance of Terms</h2>
+          <p>By accessing and using our platform, you accept and agree to be bound by the terms and provision of this agreement.</p>
+          
+          <h2>Use License</h2>
+          <p>Permission is granted to temporarily download one copy of QOOKKAR materials for personal, non-commercial transitory viewing only.</p>
+          
+          <h2>Service Terms</h2>
+          <p>QOOKKAR reserves the right to refuse service, terminate accounts, or cancel orders at our sole discretion.</p>
+          
+          <h2>Limitation of Liability</h2>
+          <p>QOOKKAR shall not be liable for any damages arising from the use or inability to use our services.</p>
+        `,
+        category: "legal",
+        isPublished: true,
+        order: 2
+      },
+      {
+        title: "Refund Policy",
+        slug: "refund-policy",
+        content: `
+          <h1>Refund Policy</h1>
+          <p>At QOOKKAR, we strive to ensure customer satisfaction with every order.</p>
+          
+          <h2>Refund Eligibility</h2>
+          <p>Refunds may be issued for orders that are significantly delayed, cancelled by the restaurant, or if there are quality issues with the food.</p>
+          
+          <h2>Refund Process</h2>
+          <p>To request a refund, contact our customer support within 24 hours of your order. Refunds are typically processed within 5-7 business days.</p>
+          
+          <h2>Non-Refundable Items</h2>
+          <p>Certain items may not be eligible for refunds, including completed deliveries and orders with special promotions.</p>
+          
+          <h2>Contact for Refunds</h2>
+          <p>For refund requests, please contact us at refunds@qookkar.com or through our customer support.</p>
+        `,
+        category: "legal",
+        isPublished: true,
+        order: 3
+      },
+      {
+        title: "Contact Us",
+        slug: "contact",
+        content: `
+          <h1>Contact Us</h1>
+          <p>We're here to help! Get in touch with us through any of the following methods:</p>
+          
+          <h2>Customer Support</h2>
+          <p>📞 Phone: +1-800-QOOKKAR (776-6552)</p>
+          <p>📧 Email: support@qookkar.com</p>
+          <p>🕒 Hours: 24/7 Customer Support</p>
+          
+          <h2>Business Inquiries</h2>
+          <p>📧 Email: business@qookkar.com</p>
+          
+          <h2>Partner with Us</h2>
+          <p>Interested in joining our platform as a restaurant partner?</p>
+          <p>📧 Email: partners@qookkar.com</p>
+          
+          <h2>Office Address</h2>
+          <p>QOOKKAR Headquarters<br>
+          123 Food Street<br>
+          Delivery City, DC 12345</p>
+          
+          <h2>Social Media</h2>
+          <p>Follow us on social media for updates and special offers!</p>
+        `,
+        category: "support",
+        isPublished: true,
+        order: 4
+      }
+    ];
+
+    await db.insert(footerPages).values(footerPagesData).onConflictDoNothing();
 
     console.log("✅ Database seeded successfully!");
     console.log("🔑 Admin credentials: username=admin, password=admin123");
