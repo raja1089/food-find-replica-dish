@@ -45,8 +45,8 @@ const Hero = () => {
         <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-orange-300/10 rounded-full animate-ping" style={{ animationDuration: '4s' }}></div>
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 min-h-screen flex items-center">
-        <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-center w-full">
+      <div className="relative z-10 container mx-auto px-6 lg:px-12 min-h-screen flex items-center">
+        <div className="grid lg:grid-cols-2 gap-4 lg:gap-4 items-center w-full max-w-6xl mx-auto">
           
           {/* Left Content */}
           <div className="text-center lg:text-left space-y-6">
